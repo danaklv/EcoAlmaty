@@ -3,6 +3,7 @@ package handlers
 import (
 	"dl/services"
 	"net/http"
+	"strconv"
 )
 
 type NewsHandler struct {
@@ -21,11 +22,43 @@ func (h *NewsHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	news, err := h.Service.GetAllNews()
+	limit := 10
+	offset := 0
+
+	if v := r.URL.Query().Get("limit"); v != "" {
+		parsed, err := strconv.Atoi(v)
+		if err != nil || parsed <= 0 || parsed > 100 {
+			jsonError(w, http.StatusBadRequest, "invalid limit")
+			return
+		}
+		limit = parsed
+	}
+
+	if v := r.URL.Query().Get("offset"); v != "" {
+		parsed, err := strconv.Atoi(v)
+		if err != nil || parsed < 0 {
+			jsonError(w, http.StatusBadRequest, "invalid offset")
+			return
+		}
+		offset = parsed
+	}
+
+	news, err := h.Service.GetNews(limit, offset)
 	if err != nil {
 		jsonError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	jsonResponse(w, http.StatusOK, news)
+	total, err := h.Service.CountNews()
+	if err != nil {
+		jsonError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, map[string]interface{}{
+		"items":  news,
+		"limit":  limit,
+		"offset": offset,
+		"total":  total,
+	})
 }

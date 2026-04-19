@@ -89,7 +89,14 @@ func (h *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.Service.UpdateProfile(userID, data.FirstName, data.LastName, data.Gender, data.Bio, data.BirthDate); err != nil {
+	if err := h.Service.UpdateProfile(
+		userID,
+		data.FirstName,
+		data.LastName,
+		data.Gender,
+		data.Bio,
+		data.BirthDate,
+	); err != nil {
 		jsonError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

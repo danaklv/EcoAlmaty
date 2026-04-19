@@ -17,16 +17,24 @@ import (
 	"dl/repositories"
 	"dl/seeders"
 	"dl/services"
+	"dl/utils"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 func main() {
+	_ = godotenv.Load()
+
 	// --- Конфигурация (env с fallback) ---
 	dbURL := getenv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/ecofoot?sslmode=disable")
 	addr := getenv("HTTP_ADDR", ":8080")
 	uploadsDir := getenv("UPLOADS_DIR", "./uploads")
 	newsIntervalMin := getenvInt("NEWS_INTERVAL_MIN", 30)
+
+	if err := utils.EnsureJWTSecret(); err != nil {
+		log.Fatal(err)
+	}
 
 	// --- Создать папку uploads если нет ---
 	if err := ensureDir(uploadsDir); err != nil {
@@ -41,9 +49,12 @@ func main() {
 		log.Fatal("Failed to run seeders: ", err)
 	}
 
+	authLimiter := middleware.NewRateLimiter(5, time.Minute)
+	passwordLimiter := middleware.NewRateLimiter(3, time.Minute)
 	// --- AUTH ---
 	userRepo := repositories.NewUserRepository(db)
-	authService := services.NewAuthService(userRepo)
+	authRepo := repositories.NewAuthRepository(db)
+	authService := services.NewAuthService(userRepo, authRepo)
 	authHandler := &handlers.AuthHandler{Service: authService}
 
 	// --- PROFILE ---
@@ -51,9 +62,25 @@ func main() {
 	profileService := services.NewProfileService(profileRepo)
 	profileHandler := &handlers.ProfileHandler{Service: profileService}
 
+	// --- GAMIFICATION ---
+
+	gamificationRepo := repositories.NewGamificationRepository(db)
+	gamificationService := services.NewGamificationService(gamificationRepo)
+	gamificationHandler := &handlers.GamificationHandler{Service: gamificationService}
+
+	// --- CHALLENGES ---
+	challengeRepo := repositories.NewChallengeRepository(db)
+	challengeService := services.NewChallengeService(challengeRepo)
+	challengeHandler := &handlers.ChallengeHandler{Service: challengeService}
+
 	// --- RATING ---
 	ratingRepo := repositories.NewRatingRepository(db)
-	ratingService := services.NewRatingService(ratingRepo)
+	ratingService := services.NewRatingService(
+		ratingRepo,
+		gamificationService,
+		challengeService,
+		challengeRepo,
+	)
 	ratingHandler := &handlers.RatingHandler{Service: ratingService}
 
 	// --- NEWS ---
@@ -61,20 +88,27 @@ func main() {
 	newsService := services.NewNewsService(newsRepo)
 	newsHandler := handlers.NewNewsHandler(newsService)
 
-	// -- ECO
+	// --- ECO ---
 	ecoRepo := repositories.NewEcoRepository(db)
-	ecoService := services.NewEcoService(ecoRepo)
+	ecoService := services.NewEcoService(
+		ecoRepo,
+		gamificationService,
+		challengeService,
+	)
 	ecoHandler := handlers.EcoHandler{Service: ecoService}
 
 	// --- Router ---
 	mux := http.NewServeMux()
 
 	// Public auth routes
-	mux.HandleFunc("/register", authHandler.Register)
-	mux.HandleFunc("/login", authHandler.Login)
+	mux.Handle("/register", authLimiter.Limit(http.HandlerFunc(authHandler.Register)))
+	mux.Handle("/login", authLimiter.Limit(http.HandlerFunc(authHandler.Login)))
+	mux.Handle("/forgot-password", passwordLimiter.Limit(http.HandlerFunc(authHandler.ForgotPassword)))
+
 	mux.HandleFunc("/verify", authHandler.Verify)
-	mux.HandleFunc("/forgot-password", authHandler.ForgotPassword)
 	mux.HandleFunc("/reset-password", authHandler.ResetPassword)
+	mux.HandleFunc("/refresh", authHandler.Refresh)
+	mux.HandleFunc("/logout", authHandler.Logout)
 	// TODO: add /refresh, /logout endpoints in AuthHandler (and implement refresh token storage)
 
 	// Static uploads
@@ -91,11 +125,29 @@ func main() {
 	mux.Handle("/user-actions", middleware.JWTAuth(http.HandlerFunc(ratingHandler.GetUserActions)))
 	mux.Handle("/leaderboard", middleware.JWTAuth(http.HandlerFunc(ratingHandler.GetLeaderboard)))
 
+	//gamification routes
+	mux.Handle("/gamification/streak", middleware.JWTAuth(http.HandlerFunc(gamificationHandler.GetStreak)))
+	mux.Handle("/gamification/achievements", middleware.JWTAuth(http.HandlerFunc(gamificationHandler.GetAchievements)))
+
+	mux.Handle("/challenges/current", middleware.JWTAuth(http.HandlerFunc(challengeHandler.GetCurrent)))
+
+	// =============================
+	// ECO FOOTPRINT TEST
+	// =============================
+	mux.Handle("/eco/questions", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetQuestions)))
+	mux.Handle("/eco/submit", middleware.JWTAuth(http.HandlerFunc(ecoHandler.Submit)))
+	mux.Handle("/eco/latest", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetLatest)))
+	mux.Handle("/eco/result", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetResult)))
+	mux.Handle("/eco/history", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetHistory)))
+	mux.Handle("/eco/progress", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetProgress)))
+
 	// News (public)
 	mux.HandleFunc("/news", newsHandler.GetAll)
 
 	// Middleware chain: CORS -> (optionally Logging/Recovery) -> mux
 	handler := middleware.EnableCORS(mux)
+	handler = middleware.RequestLogger(handler)
+	handler = middleware.Recovery(handler)
 	// TODO: add middleware.Recovery(handler) and middleware.RequestLogger(handler) if добавите реализации
 
 	// --- Background job: обновление новостей по расписанию ---

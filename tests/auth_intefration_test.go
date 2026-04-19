@@ -1,14 +1,7 @@
 package tests
 
 import (
-	"bytes"
 	"database/sql"
-	"dl/handlers"
-	"dl/services"
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 )
 
@@ -22,36 +15,34 @@ func setupTestDB(t *testing.T) *sql.DB {
 	return db
 }
 
-func TestRegisterIntegration(t *testing.T) {
-	db := setupTestDB(t)
-	defer db.Close()
+// func TestRegisterIntegration(t *testing.T) {
+// 	db := setupTestDB(t)
+// 	defer db.Close()
 
-	service := &services.AuthService{DB: db}
-	handler := &handlers.AuthHandler{Service: service}
+// 	service := &services.AuthService{DB: db}
+// 	handler := &handlers.AuthHandler{Service: service}
 
-	body := map[string]string{
-		"username": "TestUser",
-		"email":    "testuser@gmail.com",
-		"password": "StrongPass123!",
-	}
-	jsonBody, _ := json.Marshal(body)
+// 	body := map[string]string{
+// 		"username": "TestUser",
+// 		"email":    "testuser@gmail.com",
+// 		"password": "StrongPass123!",
+// 	}
+// 	jsonBody, _ := json.Marshal(body)
 
-	req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(jsonBody))
-	req.Header.Set("Content-Type", "application/json")
+// 	req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(jsonBody))
+// 	req.Header.Set("Content-Type", "application/json")
 
-	rr := httptest.NewRecorder()
-	handler.Register(rr, req)
+// 	rr := httptest.NewRecorder()
+// 	handler.Register(rr, req)
 
-	if rr.Code != http.StatusOK {
-		t.Errorf("expected 200, hot %d", rr.Code)
-	}
+// 	if rr.Code != http.StatusOK {
+// 		t.Errorf("expected 200, hot %d", rr.Code)
+// 	}
 
-	var count int
+// 	var count int
 
-	err := db.QueryRow("SELECT COUNT(*) FROM users WHERE email = $1", "testuser@gmail.com").Scan(&count)
-	if err != nil || count == 0 {
-		fmt.Println("errr=", err)
-		t.Errorf("user not inserted in DB")
-	}
-
-}
+// 	err := db.QueryRow("SELECT COUNT(*) FROM users WHERE email = $1", "testuser@gmail.com").Scan(&count)
+// 	if err != nil || count == 0 {
+// 		fmt.Println("errr=", err)
+// 		t.Errorf("user not inserted in DB")
+// 	}

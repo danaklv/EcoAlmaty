@@ -40,8 +40,12 @@ func (r *ProfileRepository) GetProfileByID(userID int64) (*models.UserProfile, e
 func (r *ProfileRepository) UpdateProfile(userID int64, first, last, gender, bio, birth string) error {
 	_, err := r.DB.Exec(`
         UPDATE users
-        SET first_name = $1, last_name = $2, gender = $3, bio = $4,
-            birth_date = $5, updated_at = $6
+        SET first_name = $1,
+            last_name = $2,
+            gender = $3,
+            bio = $4,
+            birth_date = $5,
+            updated_at = $6
         WHERE id = $7
     `, first, last, gender, bio, birth, time.Now(), userID)
 	return err

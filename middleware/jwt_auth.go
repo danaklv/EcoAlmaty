@@ -2,22 +2,29 @@ package middleware
 
 import (
 	"dl/utils"
-	"fmt"
+	"encoding/json"
 	"net/http"
 	"strings"
 )
 
+func writeJSONError(w http.ResponseWriter, status int, msg string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(map[string]string{
+		"error": msg,
+	})
+}
+
 func JWTAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
-			http.Error(w, "Missing Authorization header", http.StatusUnauthorized)
+			writeJSONError(w, http.StatusUnauthorized, "missing authorization header")
 			return
 		}
 
 		if !strings.HasPrefix(authHeader, "Bearer ") {
-			http.Error(w, "Invalid token format", http.StatusUnauthorized)
+			writeJSONError(w, http.StatusUnauthorized, "invalid token format")
 			return
 		}
 
@@ -25,15 +32,11 @@ func JWTAuth(next http.Handler) http.Handler {
 
 		claims, err := utils.ParseToken(tokenString)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid token: %v", err), http.StatusUnauthorized)
+			writeJSONError(w, http.StatusUnauthorized, "invalid token")
 			return
 		}
 
-		// Добавляем userID в контекст
 		ctx := utils.ContextWithUserID(r.Context(), claims.UserID)
-		r = r.WithContext(ctx)
-
-		// Передаём управление дальше
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

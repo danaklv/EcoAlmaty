@@ -83,3 +83,46 @@ func (r *NewsRepository) GetAllNews() ([]models.NewsItem, error) {
 
 	return news, nil
 }
+
+
+func (r *NewsRepository) GetNews(limit, offset int) ([]models.NewsItem, error) {
+	rows, err := r.DB.Query(`
+        SELECT id, title, link, published_at, source, description
+        FROM news
+        ORDER BY published_at DESC
+        LIMIT $1 OFFSET $2
+    `, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var news []models.NewsItem
+
+	for rows.Next() {
+		var n models.NewsItem
+		if err := rows.Scan(
+			&n.ID,
+			&n.Title,
+			&n.Link,
+			&n.PublishedAt,
+			&n.Source,
+			&n.Description,
+		); err != nil {
+			return nil, err
+		}
+		news = append(news, n)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return news, nil
+}
+
+func (r *NewsRepository) CountNews() (int, error) {
+	var total int
+	err := r.DB.QueryRow(`SELECT COUNT(*) FROM news`).Scan(&total)
+	return total, err
+}

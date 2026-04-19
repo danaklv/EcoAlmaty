@@ -3,10 +3,10 @@ package utils
 import (
 	"errors"
 	"mime/multipart"
+	"net/http"
 	"path/filepath"
 )
 
-// Разрешённые расширения
 var allowedExtensions = map[string]bool{
 	".jpg":  true,
 	".jpeg": true,
@@ -14,10 +14,8 @@ var allowedExtensions = map[string]bool{
 	".gif":  true,
 }
 
-// Максимальный размер файла — 5 МБ
-const maxFileSize = 5 * 1024 * 1024 // 5MB
+const maxFileSize = 5 * 1024 * 1024
 
-// ValidateImage проверяет тип и размер загружаемого файла
 func ValidateImage(file multipart.File, handler *multipart.FileHeader) error {
 	ext := filepath.Ext(handler.Filename)
 	if !allowedExtensions[ext] {
@@ -28,7 +26,19 @@ func ValidateImage(file multipart.File, handler *multipart.FileHeader) error {
 		return errors.New("file too large: max 5MB allowed")
 	}
 
-	// Вернуть курсор в начало (иначе io.Copy не сработает)
+	buffer := make([]byte, 512)
+	n, err := file.Read(buffer)
+	if err != nil {
+		return errors.New("failed to read file")
+	}
+
+	contentType := http.DetectContentType(buffer[:n])
+	switch contentType {
+	case "image/jpeg", "image/png", "image/gif":
+	default:
+		return errors.New("invalid image content type")
+	}
+
 	if _, err := file.Seek(0, 0); err != nil {
 		return errors.New("failed to reset file pointer")
 	}

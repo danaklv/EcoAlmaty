@@ -4,13 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"regexp"
 
 	"gopkg.in/gomail.v2"
 )
 
 func ValidatePassword(password string) error {
-	fmt.Println("password =", password)
 	if len(password) < 8 {
 		return errors.New("password must be at least 8 characters")
 	}
@@ -34,25 +34,31 @@ func ValidatePassword(password string) error {
 	return nil
 }
 
-func SendResetPasswordEmail(to, token string) error {
-	resetLink := fmt.Sprintf("http://localhost:8080/reset-password?token=%s", token)
+func SendResetPasswordEmail(to, resetLink string) error {
+	smtpUser := os.Getenv("SMTP_USER")
+	smtpPass := os.Getenv("SMTP_PASS")
 
 	m := gomail.NewMessage()
-	m.SetHeader("From", "kalykovadana3@gmail.com")
+	m.SetHeader("From", smtpUser)
 	m.SetHeader("To", to)
 	m.SetHeader("Subject", "Password Reset Request")
-	m.SetBody("text/plain",
+	m.SetBody(
+		"text/plain",
 		fmt.Sprintf(
-			"We received a request to reset your password.\n\nClick the link below to set a new one (valid for 15 minutes):\n\n%s\n\nIf you didn’t request this, you can safely ignore this email.",
+			"We received a request to reset your password.\n\n"+
+				"Click the link below to set a new one (valid for 15 minutes):\n\n"+
+				"%s\n\n"+
+				"If you didn’t request this, you can safely ignore this email.",
 			resetLink,
 		),
 	)
 
-	d := gomail.NewDialer("smtp.gmail.com", 587, "kalykovadana3@gmail.com", "qnxq kkph idrb lvsv")
+	d := gomail.NewDialer("smtp.gmail.com", 587, smtpUser, smtpPass)
 
 	if err := d.DialAndSend(m); err != nil {
 		log.Println("Failed to send password reset email:", err)
 		return err
 	}
+
 	return nil
 }

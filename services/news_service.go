@@ -22,7 +22,7 @@ func (s *NewsService) UpdateNews() error {
 	parser := gofeed.NewParser()
 
 	feeds := []string{
-		"https://ecogosfond.kz/feed/",
+		"https://news.google.com/rss/search?q=экология+Алматы&hl=ru&gl=KZ&ceid=KZ:ru",
 	}
 
 	var allNews []models.NewsItem
@@ -55,4 +55,13 @@ func (s *NewsService) UpdateNews() error {
 
 func (s *NewsService) GetAllNews() ([]models.NewsItem, error) {
 	return s.Repo.GetAllNews()
+}
+
+
+func (s *NewsService) GetNews(limit, offset int) ([]models.NewsItem, error) {
+	return s.Repo.GetNews(limit, offset)
+}
+
+func (s *NewsService) CountNews() (int, error) {
+	return s.Repo.CountNews()
 }

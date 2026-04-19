@@ -1,21 +1,37 @@
 package utils
 
 import (
+	"errors"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var jwtKey = []byte(os.Getenv("JWT_SECRET"))
+func getJWTKey() ([]byte, error) {
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		return nil, errors.New("JWT_SECRET is required")
+	}
+	return []byte(secret), nil
+}
 
 type Claims struct {
 	UserID int64 `json:"user_id"`
 	jwt.RegisteredClaims
 }
 
+func EnsureJWTSecret() error {
+	_, err := getJWTKey()
+	return err
+}
+
 func GenerateTokens(userID int64) (string, string, error) {
-	// access token (15 min)
+	jwtKey, err := getJWTKey()
+	if err != nil {
+		return "", "", err
+	}
+
 	accessClaims := &Claims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -28,7 +44,6 @@ func GenerateTokens(userID int64) (string, string, error) {
 		return "", "", err
 	}
 
-	// refresh token (7 days)
 	refreshClaims := &Claims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -45,12 +60,17 @@ func GenerateTokens(userID int64) (string, string, error) {
 }
 
 func ParseToken(tokenStr string) (*Claims, error) {
+	jwtKey, err := getJWTKey()
+	if err != nil {
+		return nil, err
+	}
+
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
 	if err != nil || !token.Valid {
-		return nil, err
+		return nil, errors.New("invalid token")
 	}
 	return claims, nil
 }

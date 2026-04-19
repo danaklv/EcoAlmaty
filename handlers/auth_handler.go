@@ -80,6 +80,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 // ------------------------ LOGIN ------------------------
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != http.MethodPost {
 		jsonError(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
@@ -194,5 +195,69 @@ func (h *AuthHandler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 
 	jsonResponse(w, http.StatusOK, map[string]string{
 		"message": "Password successfully reset",
+	})
+}
+
+// ------------------------ LOGOUT ------------------------
+
+func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		jsonError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	var data struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		jsonError(w, http.StatusBadRequest, "invalid JSON body")
+		return
+	}
+
+	if data.RefreshToken == "" {
+		jsonError(w, http.StatusBadRequest, "refresh_token is required")
+		return
+	}
+
+	if err := h.Service.Logout(data.RefreshToken); err != nil {
+		jsonError(w, http.StatusInternalServerError, "logout failed")
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, map[string]string{
+		"message": "logged out successfully",
+	})
+}
+
+func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		jsonError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	var data struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		jsonError(w, http.StatusBadRequest, "invalid JSON")
+		return
+	}
+
+	if data.RefreshToken == "" {
+		jsonError(w, http.StatusBadRequest, "refresh_token required")
+		return
+	}
+
+	access, refresh, err := h.Service.Refresh(data.RefreshToken)
+	if err != nil {
+		jsonError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, map[string]string{
+		"access_token":  access,
+		"refresh_token": refresh,
 	})
 }

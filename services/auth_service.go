@@ -4,6 +4,7 @@ import (
 	"dl/repositories"
 	"dl/utils"
 	"errors"
+	"os"
 	"strings"
 	"time"
 
@@ -13,11 +14,18 @@ import (
 )
 
 type AuthService struct {
-	Repo *repositories.UserRepository
+	Users *repositories.UserRepository
+	Auth  *repositories.AuthRepository
 }
 
-func NewAuthService(repo *repositories.UserRepository) *AuthService {
-	return &AuthService{Repo: repo}
+func NewAuthService(
+	userRepo *repositories.UserRepository,
+	authRepo *repositories.AuthRepository,
+) *AuthService {
+	return &AuthService{
+		Users: userRepo,
+		Auth:  authRepo,
+	}
 }
 
 // --------------------------------------------------------
@@ -47,7 +55,7 @@ func (s *AuthService) Register(username, email, password string) (string, string
 	}
 
 	// try to create user
-	userID, err := s.Repo.CreateUser(username, email, hashed)
+	userID, err := s.Users.CreateUser(username, email, hashed)
 
 	// unique errors
 	if err != nil {
@@ -67,7 +75,7 @@ func (s *AuthService) Register(username, email, password string) (string, string
 	expires := time.Now().Add(10 * time.Minute)
 
 	// store code
-	if err := s.Repo.StoreVerificationCode(userID, code, expires); err != nil {
+	if err := s.Users.StoreVerificationCode(userID, code, expires); err != nil {
 		return "", "", err
 	}
 
@@ -85,7 +93,7 @@ func (s *AuthService) Register(username, email, password string) (string, string
 func (s *AuthService) Login(email, password string) (string, string, error) {
 	email = strings.TrimSpace(email)
 
-	userID, hashed, verified, err := s.Repo.GetUserByEmail(email)
+	userID, hashed, verified, err := s.Users.GetUserByEmail(email)
 	if err != nil {
 		return "", "", errors.New("invalid email or password")
 	}
@@ -98,7 +106,40 @@ func (s *AuthService) Login(email, password string) (string, string, error) {
 		return "", "", errors.New("email not verified")
 	}
 
-	return utils.GenerateTokens(userID)
+	access, refresh, err := utils.GenerateTokens(userID)
+	if err != nil {
+		return "", "", err
+	}
+
+	// ⬇️ СОХРАНЯЕМ refresh token
+	_ = s.Auth.SaveRefreshToken(
+		userID,
+		refresh,
+		time.Now().Add(7*24*time.Hour),
+	)
+
+	return access, refresh, nil
+}
+
+// --------------------------------------------------------
+// LOGOUT
+// --------------------------------------------------------
+
+func (s *AuthService) Logout(refreshToken string) error {
+	_, expires, revoked, err := s.Auth.GetRefreshToken(refreshToken)
+	if err != nil {
+		return errors.New("invalid refresh token")
+	}
+
+	if revoked {
+		return errors.New("token already revoked")
+	}
+
+	if time.Now().After(expires) {
+		return errors.New("token expired")
+	}
+
+	return s.Auth.RevokeRefreshToken(refreshToken)
 }
 
 // --------------------------------------------------------
@@ -106,24 +147,38 @@ func (s *AuthService) Login(email, password string) (string, string, error) {
 // --------------------------------------------------------
 
 func (s *AuthService) VerifyEmail(code string) (string, string, error) {
-	// userID, expires, err := s.Repo.GetUserByVerificationCode(code)
-	userID, _, err := s.Repo.GetUserByVerificationCode(code)
+	userID, expires, err := s.Users.GetUserByVerificationCode(code)
 	if err != nil {
 		return "", "", errors.New("invalid or expired verification link")
 	}
 
-	// if time.Now().After(expires) {
-	// 	_ = s.Repo.DeleteVerificationCode(userID)
-	// 	return "", "", errors.New("verification link expired")
-	// }
+	if time.Now().After(expires) {
+		_ = s.Users.DeleteVerificationCode(userID)
+		return "", "", errors.New("verification link expired")
+	}
 
-	// if err := s.Repo.SetUserVerified(userID); err != nil {
-	// 	return "", "", err
-	// }
+	if err := s.Users.SetUserVerified(userID); err != nil {
+		return "", "", err
+	}
 
-	// _ = s.Repo.DeleteVerificationCode(userID)
+	if err := s.Users.DeleteVerificationCode(userID); err != nil {
+		return "", "", err
+	}
+	access, refresh, err := utils.GenerateTokens(userID)
+	if err != nil {
+		return "", "", err
+	}
 
-	return utils.GenerateTokens(userID)
+	if err := s.Auth.SaveRefreshToken(
+		userID,
+		refresh,
+		time.Now().Add(7*24*time.Hour),
+	); err != nil {
+		return "", "", err
+	}
+
+	return access, refresh, nil
+
 }
 
 // --------------------------------------------------------
@@ -131,7 +186,7 @@ func (s *AuthService) VerifyEmail(code string) (string, string, error) {
 // --------------------------------------------------------
 
 func (s *AuthService) RequestPasswordReset(email string) error {
-	userID, _, _, err := s.Repo.GetUserByEmail(email)
+	userID, _, _, err := s.Users.GetUserByEmail(email)
 	if err != nil {
 		return errors.New("user not found")
 	}
@@ -139,11 +194,16 @@ func (s *AuthService) RequestPasswordReset(email string) error {
 	token := uuid.New().String()
 	expires := time.Now().Add(15 * time.Minute)
 
-	if err := s.Repo.CreatePasswordReset(userID, token, expires); err != nil {
+	if err := s.Users.CreatePasswordReset(userID, token, expires); err != nil {
 		return err
 	}
 
-	resetLink := "http://localhost:5173/reset-password?token=" + token
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		frontendURL = "http://localhost:5173"
+	}
+
+	resetLink := frontendURL + "/reset-password?token=" + token
 	go utils.SendResetPasswordEmail(email, resetLink)
 
 	return nil
@@ -154,7 +214,7 @@ func (s *AuthService) RequestPasswordReset(email string) error {
 // --------------------------------------------------------
 
 func (s *AuthService) ResetPassword(token, newPassword string) error {
-	userID, expires, used, err := s.Repo.GetPasswordReset(token)
+	userID, expires, used, err := s.Users.GetPasswordReset(token)
 	if err != nil {
 		return errors.New("invalid or expired token")
 	}
@@ -175,10 +235,48 @@ func (s *AuthService) ResetPassword(token, newPassword string) error {
 	}
 
 	// update password
-	if err := s.Repo.UpdateUserPassword(userID, hashed); err != nil {
+	if err := s.Users.UpdateUserPassword(userID, hashed); err != nil {
 		return err
 	}
 
 	// mark token as used
-	return s.Repo.MarkResetTokenUsed(token)
+	return s.Users.MarkResetTokenUsed(token)
+}
+
+func (s *AuthService) Refresh(refreshToken string) (string, string, error) {
+
+	userID, expires, revoked, err := s.Auth.GetRefreshToken(refreshToken)
+	if err != nil {
+		return "", "", errors.New("invalid refresh token")
+	}
+
+	if revoked {
+		return "", "", errors.New("token revoked")
+	}
+
+	if time.Now().After(expires) {
+		return "", "", errors.New("token expired")
+	}
+
+	// генерим новые токены
+	access, newRefresh, err := utils.GenerateTokens(userID)
+	if err != nil {
+		return "", "", err
+	}
+
+	// инвалидируем старый
+	if err := s.Auth.RevokeRefreshToken(refreshToken); err != nil {
+		return "", "", err
+	}
+
+	// сохраняем новый
+	if err := s.Auth.SaveRefreshToken(
+		userID,
+		newRefresh,
+		time.Now().Add(7*24*time.Hour),
+	); err != nil {
+		return "", "", err
+	}
+
+	return access, newRefresh, nil
 }
