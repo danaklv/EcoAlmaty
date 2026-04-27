@@ -18,12 +18,14 @@ import (
 	"dl/seeders"
 	"dl/services"
 	"dl/utils"
+	"encoding/json"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 func main() {
+
 	_ = godotenv.Load()
 
 	// --- Конфигурация (env с fallback) ---
@@ -97,6 +99,11 @@ func main() {
 	)
 	ecoHandler := handlers.EcoHandler{Service: ecoService}
 
+	// --- FRIENDS ---
+	friendsRepo := repositories.NewFriendsRepository(db)
+	friendsService := services.NewFriendsService(friendsRepo)
+	friendsHandler := &handlers.FriendsHandler{Service: friendsService}
+
 	// --- Router ---
 	mux := http.NewServeMux()
 
@@ -109,7 +116,52 @@ func main() {
 	mux.HandleFunc("/reset-password", authHandler.ResetPassword)
 	mux.HandleFunc("/refresh", authHandler.Refresh)
 	mux.HandleFunc("/logout", authHandler.Logout)
+
+	// Friends routes
+	mux.Handle("/friends/send", middleware.JWTAuth(http.HandlerFunc(friendsHandler.SendRequest)))
+	mux.Handle("/friends/respond", middleware.JWTAuth(http.HandlerFunc(friendsHandler.RespondRequest)))
+	mux.Handle("/friends", middleware.JWTAuth(http.HandlerFunc(friendsHandler.GetFriends)))
+	mux.Handle("/friends/requests", middleware.JWTAuth(http.HandlerFunc(friendsHandler.GetIncomingRequests)))
+
 	// TODO: add /refresh, /logout endpoints in AuthHandler (and implement refresh token storage)
+
+	mux.Handle("/eco-actions", middleware.JWTAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		rows, err := db.Query(`SELECT id, name, points, category FROM eco_actions ORDER BY category, id`)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(500)
+			w.Write([]byte(`{"error":"db error"}`))
+			return
+		}
+		defer rows.Close()
+		type Action struct {
+			ID       int64  `json:"id"`
+			Name     string `json:"name"`
+			Points   int    `json:"points"`
+			Category string `json:"category"`
+		}
+		var actions []Action
+		for rows.Next() {
+			var a Action
+			rows.Scan(&a.ID, &a.Name, &a.Points, &a.Category)
+			actions = append(actions, a)
+		}
+		if actions == nil {
+			actions = []Action{}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(actions)
+	})))
+	mux.HandleFunc("/news/refresh", func(w http.ResponseWriter, r *http.Request) {
+		if err := newsService.UpdateNews(); err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(500)
+			w.Write([]byte(`{"error":"` + err.Error() + `"}`))
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"message":"news updated"}`))
+	})
 
 	// Static uploads
 	mux.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir(uploadsDir))))
@@ -141,6 +193,25 @@ func main() {
 	mux.Handle("/eco/history", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetHistory)))
 	mux.Handle("/eco/progress", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetProgress)))
 
+	mux.HandleFunc("/users/search", func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query().Get("q")
+		w.Header().Set("Content-Type", "application/json")
+		if q == "" {
+			w.Write([]byte("[]"))
+			return
+		}
+		results, err := userRepo.SearchByUsername(q)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(`{"error":"search failed"}`))
+			return
+		}
+		if results == nil {
+			w.Write([]byte("[]"))
+			return
+		}
+		json.NewEncoder(w).Encode(results)
+	})
 	// News (public)
 	mux.HandleFunc("/news", newsHandler.GetAll)
 

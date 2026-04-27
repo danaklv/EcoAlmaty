@@ -130,7 +130,7 @@ func (r *RatingRepository) GetUserActions(userID int64) ([]models.UserAction, er
 
 func (r *RatingRepository) GetLeaderboard(limit, offset int) ([]models.LeaderboardEntry, error) {
 	rows, err := r.DB.Query(`
-       SELECT username, rating, level, league, profile_picture
+        SELECT username, rating, level, league, profile_picture
         FROM users
         ORDER BY rating DESC
         LIMIT $1 OFFSET $2
@@ -143,20 +143,23 @@ func (r *RatingRepository) GetLeaderboard(limit, offset int) ([]models.Leaderboa
 	var list []models.LeaderboardEntry
 	for rows.Next() {
 		var e models.LeaderboardEntry
+		var avatar sql.NullString
 		if err := rows.Scan(
 			&e.Username,
 			&e.Rating,
 			&e.Level,
 			&e.League,
-			&e.Avatar,
+			&avatar,
 		); err != nil {
 			return nil, err
+		}
+		if avatar.Valid {
+			e.Avatar = avatar.String
 		}
 		list = append(list, e)
 	}
 	return list, rows.Err()
 }
-
 func (r *RatingRepository) CountLeaderboard() (int, error) {
 	var total int
 	err := r.DB.QueryRow(`SELECT COUNT(*) FROM users`).Scan(&total)
