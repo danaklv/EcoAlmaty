@@ -119,3 +119,39 @@ func (r *UserRepository) UpdateUserPassword(userID int64, hashed []byte) error {
     `, hashed, userID)
 	return err
 }
+func (r *UserRepository) SearchByUsername(query string) ([]struct {
+	ID       int64  `json:"ID"`
+	Username string `json:"Username"`
+	League   string `json:"League"`
+	Level    int    `json:"Level"`
+}, error) {
+	rows, err := r.DB.Query(`
+		SELECT id, username, league, level FROM users
+		WHERE username ILIKE $1 AND is_verified = true
+		LIMIT 10
+	`, "%"+query+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []struct {
+		ID       int64  `json:"ID"`
+		Username string `json:"Username"`
+		League   string `json:"League"`
+		Level    int    `json:"Level"`
+	}
+	for rows.Next() {
+		var u struct {
+			ID       int64  `json:"ID"`
+			Username string `json:"Username"`
+			League   string `json:"League"`
+			Level    int    `json:"Level"`
+		}
+		if err := rows.Scan(&u.ID, &u.Username, &u.League, &u.Level); err != nil {
+			return nil, err
+		}
+		result = append(result, u)
+	}
+	return result, nil
+}
