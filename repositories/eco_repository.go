@@ -49,72 +49,72 @@ func (r *EcoRepository) GetQuestions() ([]models.EcoQuestion, error) {
 func (r *EcoRepository) SaveSubmission(
 	userID int64,
 	answers map[int]int,
-	totalScore float64,
+	total float64,
 	maxScore float64,
 	percent float64,
 	category string,
 	description string,
-	strongestCategory string,
-	weakestCategory string,
+	strongest string,
+	weakest string,
 	breakdown []models.EcoCategoryBreakdown,
 	recommendations []models.EcoPersonalRecommendation,
-) error {
+) (int64, error) {
+
 	tx, err := r.DB.Begin()
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer tx.Rollback()
 
-	for qID, value := range answers {
-		_, err := tx.Exec(`
-			INSERT INTO eco_answers (user_id, question_id, value)
-			VALUES ($1, $2, $3)
-		`, userID, qID, value)
-		if err != nil {
-			return err
-		}
-	}
-
 	var resultID int64
+
 	err = tx.QueryRow(`
-		INSERT INTO eco_results (
-			user_id,
-			total_score,
-			max_score,
-			percent,
-			category,
-			description,
-			strongest_category,
-			weakest_category
-		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-		RETURNING id
-	`,
+        INSERT INTO eco_results (
+            user_id, total_score, max_score, percent,
+            category, description,
+            strongest_category, weakest_category
+        )
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+        RETURNING id
+    `,
 		userID,
-		totalScore,
+		total,
 		maxScore,
 		percent,
 		category,
 		description,
-		strongestCategory,
-		weakestCategory,
+		strongest,
+		weakest,
 	).Scan(&resultID)
+
 	if err != nil {
-		return err
+		return 0, err
+	}
+
+	for qID, value := range answers {
+		_, err := tx.Exec(`
+            INSERT INTO eco_answers (
+                result_id, user_id, question_id, value
+            )
+            VALUES ($1,$2,$3,$4)
+        `,
+			resultID,
+			userID,
+			qID,
+			value,
+		)
+		if err != nil {
+			return 0, err
+		}
 	}
 
 	for _, b := range breakdown {
 		_, err := tx.Exec(`
-			INSERT INTO eco_result_breakdowns (
-				result_id,
-				category,
-				score,
-				max_score,
-				percent,
-				level
-			)
-			VALUES ($1, $2, $3, $4, $5, $6)
-		`,
+            INSERT INTO eco_result_breakdowns (
+                result_id, category, score, max_score, percent, level
+            )
+            VALUES ($1,$2,$3,$4,$5,$6)
+        `,
 			resultID,
 			b.Category,
 			b.Score,
@@ -123,23 +123,17 @@ func (r *EcoRepository) SaveSubmission(
 			b.Level,
 		)
 		if err != nil {
-			return err
+			return 0, err
 		}
 	}
 
 	for _, rec := range recommendations {
 		_, err := tx.Exec(`
-			INSERT INTO eco_result_recommendations (
-				result_id,
-				question,
-				category,
-				answer,
-				max_value,
-				impact,
-				tip
-			)
-			VALUES ($1, $2, $3, $4, $5, $6, $7)
-		`,
+            INSERT INTO eco_result_recommendations (
+                result_id, question, category, answer, max_value, impact, tip
+            )
+            VALUES ($1,$2,$3,$4,$5,$6,$7)
+        `,
 			resultID,
 			rec.Question,
 			rec.Category,
@@ -149,11 +143,15 @@ func (r *EcoRepository) SaveSubmission(
 			rec.Tip,
 		)
 		if err != nil {
-			return err
+			return 0, err
 		}
 	}
 
-	return tx.Commit()
+	if err := tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	return resultID, nil
 }
 
 func (r *EcoRepository) GetLatestResult(userID int64) (*models.EcoResult, error) {
@@ -163,7 +161,7 @@ func (r *EcoRepository) GetLatestResult(userID int64) (*models.EcoResult, error)
         SELECT
             id,
             total_score,
-            max_score,
+            max_score,	
             percent,
             category,
             description,

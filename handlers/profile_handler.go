@@ -161,10 +161,23 @@ func (h *ProfileHandler) UploadAvatar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	uploadDir := "./uploads/users"
+
+	if err := os.MkdirAll(uploadDir, 0755); err != nil {
+		jsonError(w, http.StatusInternalServerError, "could not create upload directory")
+		return
+	}
+
 	filename := fmt.Sprintf("user_%d_%s", userID, handler.Filename)
-	filePath := fmt.Sprintf("./uploads/users/%s", filename)
+	filePath := fmt.Sprintf("%s/%s", uploadDir, filename)
 
 	dst, err := os.Create(filePath)
+	if err != nil {
+		jsonError(w, http.StatusInternalServerError, "could not save file")
+		return
+	}
+	defer dst.Close()
+
 	if err != nil {
 		jsonError(w, http.StatusInternalServerError, "could not save file")
 		return

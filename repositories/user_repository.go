@@ -119,3 +119,19 @@ func (r *UserRepository) UpdateUserPassword(userID int64, hashed []byte) error {
     `, hashed, userID)
 	return err
 }
+
+func (r *UserRepository) DeleteUnverifiedUser(userID int64) error {
+	result, err := r.DB.Exec(`
+        DELETE FROM users
+        WHERE id = $1 AND is_verified = false
+    `, userID)
+	if err != nil {
+		return err
+	}
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return nil
+	}
+
+	return nil
+}

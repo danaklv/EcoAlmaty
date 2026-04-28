@@ -4,6 +4,7 @@ import (
 	"dl/repositories"
 	"dl/utils"
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -80,8 +81,10 @@ func (s *AuthService) Register(username, email, password string) (string, string
 	}
 
 	// send email
-	go utils.SendVerificationEmail(email, code)
-
+	if err := utils.SendVerificationEmail(email, code); err != nil {
+		_ = s.Users.DeleteUnverifiedUser(userID)
+		return "", "", errors.New("failed to send verification email")
+	}
 	// do not return tokens until email is verified
 	return "", "", nil
 }
@@ -94,6 +97,7 @@ func (s *AuthService) Login(email, password string) (string, string, error) {
 	email = strings.TrimSpace(email)
 
 	userID, hashed, verified, err := s.Users.GetUserByEmail(email)
+	fmt.Println(err)
 	if err != nil {
 		return "", "", errors.New("invalid email or password")
 	}

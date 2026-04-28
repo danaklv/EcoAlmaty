@@ -3,6 +3,7 @@ package handlers
 import (
 	"dl/services"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -99,6 +100,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println("LOGIN HANDLER")
 	access, refresh, err := h.Service.Login(req.Email, req.Password)
 	if err != nil {
 		jsonError(w, http.StatusUnauthorized, err.Error())

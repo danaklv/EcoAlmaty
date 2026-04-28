@@ -130,11 +130,16 @@ func (r *RatingRepository) GetUserActions(userID int64) ([]models.UserAction, er
 
 func (r *RatingRepository) GetLeaderboard(limit, offset int) ([]models.LeaderboardEntry, error) {
 	rows, err := r.DB.Query(`
-       SELECT username, rating, level, league, profile_picture
-        FROM users
-        ORDER BY rating DESC
-        LIMIT $1 OFFSET $2
-    `, limit, offset)
+		SELECT 
+			username,
+			rating,
+			level,
+			league,
+			COALESCE(profile_picture, '') AS profile_picture
+		FROM users
+		ORDER BY rating DESC
+		LIMIT $1 OFFSET $2
+	`, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -154,6 +159,7 @@ func (r *RatingRepository) GetLeaderboard(limit, offset int) ([]models.Leaderboa
 		}
 		list = append(list, e)
 	}
+
 	return list, rows.Err()
 }
 

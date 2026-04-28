@@ -83,6 +83,12 @@ func main() {
 	)
 	ratingHandler := &handlers.RatingHandler{Service: ratingService}
 
+		// --- FRIENDS ---
+	friendsRepo := repositories.NewFriendsRepository(db)
+	friendsService := services.NewFriendsService(friendsRepo)
+	friendsHandler := &handlers.FriendsHandler{Service: friendsService}
+
+
 	// --- NEWS ---
 	newsRepo := repositories.NewNewsRepository(db)
 	newsService := services.NewNewsService(newsRepo)
@@ -113,6 +119,12 @@ func main() {
 
 	// Static uploads
 	mux.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir(uploadsDir))))
+
+		// Friends routes
+	mux.Handle("/friends/send", middleware.JWTAuth(http.HandlerFunc(friendsHandler.SendRequest)))
+	mux.Handle("/friends/respond", middleware.JWTAuth(http.HandlerFunc(friendsHandler.RespondRequest)))
+	mux.Handle("/friends", middleware.JWTAuth(http.HandlerFunc(friendsHandler.GetFriends)))
+	mux.Handle("/friends/requests", middleware.JWTAuth(http.HandlerFunc(friendsHandler.GetIncomingRequests)))
 
 	// Protected profile routes (JWTAuth wrapper uses current signature: middleware.JWTAuth(next http.HandlerFunc) http.HandlerFunc)
 	mux.Handle("/eco", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetQuestions)))

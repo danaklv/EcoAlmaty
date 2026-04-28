@@ -100,7 +100,7 @@ func (s *EcoService) SubmitAnswers(
 		})
 	}
 
-	if err := s.Repo.SaveSubmission(
+	resultID, err := s.Repo.SaveSubmission(
 		userID,
 		answers,
 		totalScore,
@@ -112,10 +112,12 @@ func (s *EcoService) SubmitAnswers(
 		weakestCategory,
 		breakdown,
 		personalRecommendations,
-	); err != nil {
+	)
+	if err != nil {
 		return nil, err
 	}
 
+	_ = resultID // если пока не возвращаешь result_id во фронт
 	if s.Gamification != nil {
 		_ = s.Gamification.OnEcoTestCompleted(userID)
 	}
