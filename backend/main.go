@@ -27,7 +27,7 @@ func main() {
 	_ = godotenv.Load()
 
 	// --- Конфигурация (env с fallback) ---
-	dbURL := getenv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/ecofoot?sslmode=disable")
+	dbURL := getenv("DATABASE_URL", "postgres://postgres:password@localhost:5432/ecofoot?sslmode=disable")
 	addr := getenv("HTTP_ADDR", ":8080")
 	uploadsDir := getenv("UPLOADS_DIR", "./uploads")
 	newsIntervalMin := getenvInt("NEWS_INTERVAL_MIN", 30)
@@ -213,14 +213,29 @@ func main() {
 
 // InitDB теперь принимает строку подключения
 func InitDB(connStr string) *sql.DB {
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		log.Fatalf("Failed to open DB: %v", err)
+	var db *sql.DB
+	var err error
+
+	for i := 0; i < 10; i++ {
+		db, err = sql.Open("postgres", connStr)
+		if err != nil {
+			log.Println("DB open error:", err)
+			time.Sleep(2 * time.Second)
+			continue
+		}
+
+		err = db.Ping()
+		if err == nil {
+			log.Println("Connected to DB")
+			return db
+		}
+
+		log.Println("Waiting for DB...", err)
+		time.Sleep(2 * time.Second)
 	}
-	if err := db.Ping(); err != nil {
-		log.Fatalf("Failed to ping DB: %v", err)
-	}
-	return db
+
+	log.Fatal("Failed to connect to DB after retries")
+	return nil
 }
 
 // Помощники

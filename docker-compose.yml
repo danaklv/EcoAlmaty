@@ -8,7 +8,7 @@ services:
       - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/migrations/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql
 
   backend:
     build: ./backend
@@ -22,16 +22,16 @@ services:
     volumes:
       - ./backend/uploads:/app/uploads
 
-frontend:
-  build: ./frontend
-  container_name: eco_frontend
-  ports:
-    - "5173:5173"
-  volumes:
-    - ./frontend:/app
-    - /app/node_modules
-  depends_on:
-    - backend
+  frontend:
+    build: ./frontend
+    container_name: eco_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
 
 volumes:
   pgdata:
