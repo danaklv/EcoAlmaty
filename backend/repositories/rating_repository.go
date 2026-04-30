@@ -194,3 +194,28 @@ func (r *RatingRepository) ActionUsedToday(userID, actionID int64) (bool, error)
     `, userID, actionID).Scan(&exists)
 	return exists, err
 }
+
+// ------------------------ GET COMPLETED ACTION IDs TODAY ------------------------
+
+func (r *RatingRepository) GetCompletedActionIDs(userID int64) ([]int64, error) {
+	rows, err := r.DB.Query(`
+        SELECT DISTINCT action_id 
+        FROM user_actions 
+        WHERE user_id = $1 
+        AND created_at::date = CURRENT_DATE
+    `, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var ids []int64
+	for rows.Next() {
+		var id int64
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+	return ids, rows.Err()
+}
