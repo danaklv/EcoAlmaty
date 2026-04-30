@@ -26,13 +26,13 @@ type UserAction struct {
 }
 
 type LeaderboardEntry struct {
+	UserID   int64  `json:"user_id"`
 	Username string `json:"username"`
 	Rating   int    `json:"rating"`
 	Level    int    `json:"level"`
 	League   string `json:"league"`
 	Avatar   string `json:"avatar"`
 }
-
 type UserProfile struct {
 	ID             int64          `json:"id"`
 	Username       string         `json:"username"`

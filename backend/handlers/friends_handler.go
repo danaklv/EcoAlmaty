@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"dl/models"
 	"dl/repositories"
 	"dl/services"
 	"dl/utils"
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 type FriendsHandler struct {
@@ -110,4 +112,55 @@ func (h *FriendsHandler) GetIncomingRequests(w http.ResponseWriter, r *http.Requ
 		requests = []repositories.FriendRequest{}
 	}
 	jsonResponse(w, http.StatusOK, requests)
+}
+
+func (h *FriendsHandler) GetFriendsLeaderboard(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		jsonError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	userID, err := utils.UserIDFromContext(r.Context())
+	if err != nil {
+		jsonError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	limit := 10
+	offset := 0
+
+	if v := r.URL.Query().Get("limit"); v != "" {
+		parsed, err := strconv.Atoi(v)
+		if err != nil || parsed <= 0 || parsed > 100 {
+			jsonError(w, http.StatusBadRequest, "invalid limit")
+			return
+		}
+		limit = parsed
+	}
+
+	if v := r.URL.Query().Get("offset"); v != "" {
+		parsed, err := strconv.Atoi(v)
+		if err != nil || parsed < 0 {
+			jsonError(w, http.StatusBadRequest, "invalid offset")
+			return
+		}
+		offset = parsed
+	}
+
+	items, total, err := h.Service.GetFriendsLeaderboard(userID, limit, offset)
+	if err != nil {
+		jsonError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if items == nil {
+		items = []models.LeaderboardEntry{}
+	}
+
+	jsonResponse(w, http.StatusOK, map[string]interface{}{
+		"items":  items,
+		"limit":  limit,
+		"offset": offset,
+		"total":  total,
+	})
 }

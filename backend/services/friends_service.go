@@ -2,6 +2,7 @@ package services
 
 import (
 	"database/sql"
+	"dl/models"
 	"dl/repositories"
 	"errors"
 )
@@ -45,4 +46,28 @@ func (s *FriendsService) GetFriends(userID int64) ([]repositories.FriendRequest,
 
 func (s *FriendsService) GetIncomingRequests(userID int64) ([]repositories.FriendRequest, error) {
 	return s.Repo.GetIncomingRequests(userID)
+}
+
+func (s *FriendsService) GetFriendsLeaderboard(userID int64, limit, offset int) ([]models.LeaderboardEntry, int, error) {
+	if limit <= 0 {
+		limit = 10
+	}
+	if limit > 100 {
+		limit = 100
+	}
+	if offset < 0 {
+		offset = 0
+	}
+
+	items, err := s.Repo.GetFriendsLeaderboard(userID, limit, offset)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	total, err := s.Repo.CountFriendsLeaderboard(userID)
+	if err != nil {
+		return nil, 0, err	
+	}
+
+	return items, total, nil
 }

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"dl/models"
 )
 
 type FriendsRepository struct {
@@ -89,4 +90,88 @@ func scanFriends(rows *sql.Rows) ([]FriendRequest, error) {
 		result = append(result, f)
 	}
 	return result, nil
+}
+
+func (r *FriendsRepository) GetFriendsLeaderboard(userID int64, limit, offset int) ([]models.LeaderboardEntry, error) {
+	rows, err := r.DB.Query(`
+		SELECT 
+			u.id,
+			u.username,
+			u.rating,
+			u.level,
+			u.league,
+			COALESCE(u.profile_picture, '') AS avatar
+		FROM users u
+		WHERE u.id = $1
+
+		UNION
+
+		SELECT 
+			u.username,
+			u.rating,
+			u.level,
+			u.league,
+			COALESCE(u.profile_picture, '') AS avatar
+		FROM users u
+		WHERE u.id IN (
+			SELECT 
+				CASE
+					WHEN fr.requester_id = $1 THEN fr.addressee_id
+					ELSE fr.requester_id
+				END AS friend_id
+			FROM friend_requests fr
+			WHERE (fr.requester_id = $1 OR fr.addressee_id = $1)
+			  AND fr.status = 'accepted'
+		)
+
+		ORDER BY rating DESC
+		LIMIT $2 OFFSET $3
+	`, userID, limit, offset)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []models.LeaderboardEntry
+
+	for rows.Next() {
+		var item models.LeaderboardEntry
+		if err := rows.Scan(
+			&item.UserID,
+			&item.Username,
+			&item.Rating,
+			&item.Level,
+			&item.League,
+			&item.Avatar,
+		); err != nil {
+			return nil, err
+		}
+
+		list = append(list, item)
+	}
+
+	return list, rows.Err()
+}
+
+func (r *FriendsRepository) CountFriendsLeaderboard(userID int64) (int, error) {
+	var total int
+
+	err := r.DB.QueryRow(`
+		SELECT COUNT(*)
+		FROM users u
+		WHERE u.id = $1
+		   OR u.id IN (
+				SELECT 
+					CASE
+						WHEN fr.requester_id = $1 THEN fr.addressee_id
+						ELSE fr.requester_id
+					END AS friend_id
+				FROM friend_requests fr
+				WHERE (fr.requester_id = $1 OR fr.addressee_id = $1)
+				  AND fr.status = 'accepted'
+		   )
+	`, userID).Scan(&total)
+
+	return total, err
 }
