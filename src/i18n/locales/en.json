@@ -1,0 +1,207 @@
+{
+  "nav": {
+    "dashboard": "Dashboard", "ecoActions": "Eco Actions", "leaderboard": "Leaderboard",
+    "feed": "Feed", "map": "Map", "groups": "Groups", "friends": "Friends", "about": "About",
+    "more": "More", "profile": "Profile", "editProfile": "Edit Profile", "logout": "Logout",
+    "level": "Level {{level}}"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back", "subtitle": "Sign in to continue your eco journey",
+      "email": "Email", "password": "Password", "submit": "Sign in", "loading": "Signing in...",
+      "forgotPassword": "Forgot password?", "noAccount": "Don't have an account?", "signUp": "Sign up"
+    },
+    "register": {
+      "title": "Join EcoTrack", "subtitle": "Start your sustainable journey today",
+      "username": "Username", "email": "Email", "password": "Password", "confirmPassword": "Confirm Password",
+      "passwordMismatch": "Passwords do not match", "submit": "Create account", "loading": "Creating account...",
+      "hasAccount": "Already have an account?", "signIn": "Sign in",
+      "successTitle": "Check your email",
+      "successText": "We sent a verification link to your inbox. Open it to activate your account.",
+      "successExpiry": "Confirm your email within {{time}} — the link expires in 15 minutes.",
+      "linkExpired": "Link expired. Please register again.",
+      "alreadyConfirmed": "Already confirmed? Go to Login", "registerAgain": "Register Again"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password", "subtitle": "Enter your email to receive a password reset link",
+      "email": "Email", "submit": "Send Reset Link", "loading": "Sending...",
+      "successTitle": "Check Your Email",
+      "successText": "We've sent a password reset link to {{email}}. Please check your inbox.",
+      "backToLogin": "Back to Login", "rememberPassword": "Remember your password?", "signIn": "Sign in"
+    },
+    "verify": {
+      "verifying": "Verifying your email", "wait": "Please wait while we confirm your address",
+      "successTitle": "Account activated!", "successSubtitle": "Welcome to EcoTrack. Your account is ready to go.",
+      "successNote": "Start tracking your eco-actions and grow your impact!",
+      "goToAccount": "Go to my account", "signInInstead": "Sign in instead",
+      "errorTitle": "Verification Failed",
+      "errorNote": "The link may have expired or already been used. Register again to receive a new verification email.",
+      "registerAgain": "Register Again", "goToLogin": "Go to Login",
+      "support": "Having trouble?", "contactSupport": "Contact support"
+    }
+  },
+  "resetPassword": {
+    "invalidLink": "Invalid Link", "tokenMissing": "Reset token is missing from the URL",
+    "requestNewLink": "Request New Link",
+    "successTitle": "Password Reset!", "successText": "Your password has been updated successfully.",
+    "continueToLogin": "Continue to Login",
+    "errorTitle": "Reset Failed",
+    "setNewPassword": "Set New Password", "enterNewPassword": "Enter your new password below",
+    "newPassword": "New Password", "newPasswordPlaceholder": "Enter new password",
+    "confirmPassword": "Confirm Password", "confirmPasswordPlaceholder": "Confirm new password",
+    "submit": "Reset Password", "loading": "Resetting...",
+    "minLength": "Password must be at least 8 characters", "mismatch": "Passwords don't match"
+  },
+  "dashboard": {
+    "welcome": "Welcome back, {{name}}!", "subtitle": "Ready to make a positive impact today?",
+    "currentRating": "Current Rating", "level": "Level", "league": "League",
+    "ecoFootprint": "Your Eco Footprint", "retakeTest": "Retake Test", "takeTest": "Take the Test",
+    "takeTestPrompt": "Take the eco footprint test to discover your environmental impact",
+    "quickTips": "Quick Tips:",
+    "ecoActionsCard": "Eco Actions", "ecoActionsDesc": "Complete actions to earn points", "viewActions": "View Actions",
+    "leaderboardCard": "Leaderboard", "leaderboardDesc": "See how you rank globally", "viewRankings": "View Rankings",
+    "recentActivity": "Your Recent Activity", "noActivity": "No recent activity yet.",
+    "noActivityHint": "Complete eco actions to see your progress here!"
+  },
+  "ecoActions": {
+    "title": "Eco Actions", "subtitle": "Complete daily actions to earn points and level up!",
+    "all": "All", "completeAction": "Complete Action", "completing": "Completing...", "completedToday": "Completed Today",
+    "failedLoad": "Failed to load actions", "failedComplete": "Failed to complete action",
+    "pointsEarned": "+{{points}} points earned!", "levelUp": "Level up! You're now level {{level}}!",
+    "resetNote": "Each action can be completed once per day. All actions reset at midnight (00:00) — come back tomorrow to earn more points!",
+    "categories": { "water": "Water", "energy": "Energy", "transport": "Transport", "food": "Food", "waste": "Waste", "nature": "Nature", "shopping": "Shopping" }
+  },
+  "leaderboard": {
+    "title": "Leaderboard", "subtitle": "See how you rank among eco warriors worldwide",
+    "failedLoad": "Failed to load leaderboard", "level": "Level {{level}}", "points": "points",
+    "empty": "No users on the leaderboard yet. Be the first to complete eco actions!"
+  },
+  "profile": {
+    "editProfile": "Edit Profile", "profileInfo": "Profile Information",
+    "fullName": "Full Name", "email": "Email", "birthDate": "Birth Date", "notSet": "Not set",
+    "rating": "Rating", "level": "Level", "league": "League",
+    "totalPoints": "Total points earned", "keepGrowing": "Keep growing!",
+    "recentActivity": "Recent Activity", "noActivity": "No recent activity to display.",
+    "noActivityHint": "Complete eco actions to see your journey here!"
+  },
+  "editProfile": {
+    "title": "Edit Profile", "subtitle": "Update your personal information",
+    "profilePicture": "Profile Picture", "changePhoto": "Change Photo",
+    "photoHint": "JPG, PNG or WEBP. Max size 5MB.",
+    "personalInfo": "Personal Information",
+    "firstName": "First Name", "lastName": "Last Name", "gender": "Gender", "birthDate": "Birth Date", "bio": "Bio",
+    "selectGender": "Select gender", "male": "Male", "female": "Female", "other": "Other",
+    "pickDate": "Pick a date", "bioPlaceholder": "Tell us about yourself...",
+    "characters": "{{count}}/500 characters",
+    "save": "Save Changes", "saving": "Saving...", "cancel": "Cancel",
+    "dangerZone": "Danger Zone", "deleteAccount": "Delete Account",
+    "deleteDesc": "Permanently delete your account and all associated data",
+    "confirmTitle": "Are you absolutely sure?",
+    "confirmDesc": "This action cannot be undone. This will permanently delete your account and remove all your data from our servers.",
+    "deleting": "Deleting...",
+    "successToast": "Profile updated successfully!",
+    "failToast": "Failed to update profile",
+    "deleteSuccess": "Account deleted successfully",
+    "deleteFail": "Failed to delete account",
+    "imageTooLarge": "Image must be less than 5MB"
+  },
+  "feed": {
+    "title": "Eco News Feed", "subtitle": "Stay updated with the latest environmental news",
+    "filterBySource": "Filter by source", "allSources": "All Sources", "readMore": "Read More",
+    "noNews": "No news available",
+    "noNewsSource": "No articles found for this source. Try selecting a different source.",
+    "noNewsDefault": "Check back later for the latest environmental news.",
+    "failedLoad": "Failed to load news feed"
+  },
+  "ecoTest": {
+    "title": "Eco Footprint Test", "subtitle": "Discover your environmental impact and get personalized tips",
+    "loading": "Loading questions...", "tryAgain": "Try Again",
+    "question": "Question {{current}} of {{total}}", "complete": "{{percent}}% complete",
+    "previous": "Previous", "next": "Next", "submit": "Submit Test",
+    "analyzing": "Analyzing your footprint...",
+    "resultTitle": "Test Complete!", "resultSubtitle": "Here's your eco footprint analysis",
+    "ecoTips": "Eco Tips for You", "retake": "Retake Test",
+    "successToast": "Test completed!"
+  },
+  "home": {
+    "heroTitle": "Welcome to EcoTrack",
+    "heroSubtitle": "Join thousands of eco warriors making a positive impact on our planet",
+    "getStarted": "Get Started", "signIn": "Sign In",
+    "howItWorks": "How It Works",
+    "feature1Title": "Complete Eco Actions",
+    "feature1Desc": "Take sustainable actions like recycling, planting trees, and reducing waste",
+    "feature2Title": "Earn Points & Level Up",
+    "feature2Desc": "Gain points for each action and climb through leagues as you progress",
+    "feature3Title": "Join the Community",
+    "feature3Desc": "Connect with like-minded individuals and inspire others to go green",
+    "ctaTitle": "Ready to Make a Difference?",
+    "ctaSubtitle": "Start your eco journey today and be part of the change",
+    "ctaButton": "Join EcoTrack Now"
+  },
+  "placeholder": {
+    "comingSoon": "This feature is coming soon! Stay tuned for updates.",
+    "map": { "title": "Eco Map", "description": "Find eco-friendly locations and activities near you" },
+    "about": { "title": "About EcoTrack", "description": "Learn more about our mission to promote sustainability" }
+  },
+  "groups": {
+    "heroTitle": "Eco Groups",
+    "heroSubtitle": "Join communities focused on sustainability",
+    "members": "{{count}} members",
+    "join": "Join",
+    "items": {
+      "zeroWaste": { "name": "Zero Waste Almaty", "description": "Reducing household waste to zero through mindful consumption and recycling." },
+      "cleanAir": { "name": "Clean Air Initiative", "description": "Fighting air pollution in Almaty through awareness and eco-friendly transport." },
+      "treePlanters": { "name": "Urban Tree Planters", "description": "Planting trees across the city to improve the urban green cover." },
+      "waterSavers": { "name": "Water Savers", "description": "Promoting water conservation habits in everyday life." },
+      "renewable": { "name": "Renewable Energy Club", "description": "Advocates for solar, wind, and other renewable energy sources in Kazakhstan." },
+      "lifestyle": { "name": "Eco Lifestyle", "description": "Sharing tips and habits for a more sustainable everyday lifestyle." }
+    }
+  },
+  "friends": {
+    "title": "Friends",
+    "subtitle": "Connect with other eco warriors",
+    "sendRequest": "Send Friend Request",
+    "enterUsername": "Enter username...",
+    "send": "Send",
+    "noUsersFound": "No users found",
+    "incomingRequests": "Incoming Requests ({{count}})",
+    "noIncoming": "No incoming requests",
+    "myFriends": "My Friends ({{count}})",
+    "noFriends": "No friends yet. Send a request to get started!",
+    "lvl": "Lvl {{level}}",
+    "points": "{{points}} pts",
+    "defaultLeague": "Green Seed",
+    "level": "Level {{level}}",
+    "requestSent": "Friend request sent to {{username}}!",
+    "failedSend": "Failed to send request",
+    "added": "Friend added!",
+    "rejected": "Request rejected",
+    "failedRespond": "Failed to respond"
+  },
+  "map": {
+    "title": "Eco Map of Almaty",
+    "subtitle": "Real recycling and waste collection points from OpenStreetMap",
+    "myLocation": "My location",
+    "loading": "Loading...",
+    "pointsFound": "{{count}} points found",
+    "failedLoad": "Failed to load map data",
+    "emptyNote": "No recycling points found in OpenStreetMap for Almaty yet. Data is community-contributed.",
+    "filters": {
+      "all": "All",
+      "centre": "Centres",
+      "container": "Containers",
+      "recycling": "Recycling",
+      "waste_disposal": "Waste Disposal",
+      "charity": "Charity"
+    },
+    "popupDefault": "Recycling point",
+    "stats": {
+      "total": "Total points",
+      "centres": "Eco centres",
+      "recycling": "Recycling",
+      "containers": "Containers"
+    }
+  },
+  "notFound": { "title": "Oops! Page not found", "back": "Return to Home" },
+  "common": { "loading": "Loading...", "error": "Something went wrong", "back": "Back", "cancel": "Cancel" }
+}
