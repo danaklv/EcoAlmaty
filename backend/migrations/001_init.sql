@@ -299,3 +299,14 @@ ON user_challenges(user_id, start_date, end_date);
 
 CREATE INDEX idx_user_challenges_status
 ON user_challenges(user_id, status);
+
+-- FRIENDS
+CREATE TABLE IF NOT EXISTS friends (
+    id BIGSERIAL PRIMARY KEY,
+    requester_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    addressee_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(requester_id, addressee_id)
+);
