@@ -187,7 +187,8 @@
     "failedSend": "Failed to send request",
     "added": "Friend added!",
     "rejected": "Request rejected",
-    "failedRespond": "Failed to respond"
+    "failedRespond": "Failed to respond",
+    "removed": "Friend removed", "failedRemove": "Failed to remove friend"
   },
   "map": {
     "title": "Eco Map of Almaty",

@@ -20,10 +20,10 @@ interface Friend {
 }
 
 interface SearchUser {
-  ID: number;
-  Username: string;
-  League: string;
-  Level: number;
+  id: number;
+  username: string;
+  league: string;
+  level: number;
 }
 
 const leagueColor: Record<string, string> = {
@@ -90,7 +90,7 @@ export default function Friends() {
     searchTimeout.current = setTimeout(async () => {
       try {
         const res = await api.get(`/users/search?q=${encodeURIComponent(value)}`);
-        const filtered = (res.data || []).filter((u: SearchUser) => u.Username !== user?.username);
+        const filtered = (res.data || []).filter((u: SearchUser) => u.username !== user?.username);
         setSearchResults(filtered);
         setShowDropdown(true);
       } catch {
@@ -145,6 +145,15 @@ export default function Friends() {
       toast.error(t('friends.failedRespond'));
     }
   };
+  const handleRemoveFriend = async (friendId: number) => {
+    try {
+      await api.delete('/friends/remove', { data: { friend_id: friendId } });
+      toast.success(t('friends.removed'));
+      fetchData();
+    } catch {
+      toast.error(t('friends.failedRemove'));
+    }
+  };
 
 
   return (
@@ -189,23 +198,23 @@ export default function Friends() {
                 {showDropdown && searchResults.length > 0 && (
                   <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
                     {searchResults.map(u => {
-                      const isFriend = friends.some(f => f.username === u.Username);
+                      const isFriend = friends.some(f => f.username === u.username);
                       return (
                         <button
-                          key={u.ID}
-                          onClick={() => !isFriend && handleSelectUser(u.Username)}
+                          key={u.id}
+                          onClick={() => !isFriend && handleSelectUser(u.username)}
                           disabled={isFriend}
                           className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-muted/60 transition-colors text-left disabled:opacity-50"
                         >
                           <Avatar className="h-8 w-8">
                             <AvatarFallback className="bg-gradient-forest text-primary-foreground text-xs font-semibold">
-                              {u.Username[0].toUpperCase()}
+                              {u.username[0].toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
-                            <p className="text-sm font-medium">{u.Username}</p>
-                            <p className={`text-xs ${leagueColor[u.League] || 'text-green-500'}`}>
-                              {u.League} · Level {u.Level}
+                            <p className="text-sm font-medium">{u.username}</p>
+                            <p className={`text-xs ${leagueColor[u.league] || 'text-green-500'}`}>
+                              {u.league} · Level {u.level}
                             </p>
                           </div>
                           {isFriend && (
@@ -277,36 +286,45 @@ export default function Friends() {
           </CardHeader>
           <CardContent>
             {loading && (
-              <div className="flex justify-center py-6">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
+                <div className="flex justify-center py-6">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground"/>
+                </div>
             )}
             {!loading && friends.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
-                <Users className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                <p>{t('friends.noFriends')}</p>
-              </div>
+                <div className="text-center py-8 text-muted-foreground">
+                  <Users className="h-10 w-10 mx-auto mb-3 opacity-30"/>
+                  <p>{t('friends.noFriends')}</p>
+                </div>
             )}
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {friends.map((f, i) => (
-                <div key={f.id} className="flex items-center gap-3 p-3 rounded-xl bg-muted/40 hover:bg-muted/70 transition-colors">
-                  <span className="text-sm font-bold text-muted-foreground w-6">#{i + 1}</span>
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-gradient-forest text-primary-foreground font-semibold">
-                      {f.username[0].toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <p className="font-semibold text-sm">{f.username}</p>
-                    <p className={`text-xs ${leagueColor[f.league] || 'text-green-500'}`}>
-                      {f.league || t('friends.defaultLeague')}
-                    </p>
+                  <div key={f.id}
+                       className="flex items-center gap-3 p-3 rounded-xl bg-muted/40 hover:bg-muted/70 transition-colors">
+                    <span className="text-sm font-bold text-muted-foreground w-6">#{i + 1}</span>
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback className="bg-gradient-forest text-primary-foreground font-semibold">
+                        {f.username[0].toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <p className="font-semibold text-sm">{f.username}</p>
+                      <p className={`text-xs ${leagueColor[f.league] || 'text-green-500'}`}>
+                        {f.league || t('friends.defaultLeague')}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground">{t('friends.lvl', {level: f.level})}</p>
+                      <p className="text-sm font-bold text-primary">{t('friends.points', {points: f.rating})}</p>
+                    </div>
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => handleRemoveFriend(f.id)}
+                    >
+                      <X className="h-4 w-4"/>
+                    </Button>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs text-muted-foreground">{t('friends.lvl', { level: f.level })}</p>
-                    <p className="text-sm font-bold text-primary">{t('friends.points', { points: f.rating })}</p>
-                  </div>
-                </div>
               ))}
             </div>
           </CardContent>
