@@ -32,6 +32,7 @@ export const Navbar = () => {
     { path: '/eco-actions', label: t('nav.ecoActions'),  icon: Leaf },
     { path: '/leaderboard', label: t('nav.leaderboard'), icon: Trophy },
     { path: '/feed',        label: t('nav.feed'),        icon: Activity },
+    { path: '/forecast', label: 'AI Forecast', icon: TrendingUp },
     { path: '/map',         label: t('nav.map'),         icon: MapPin },
     { path: '/eco-history', label: t('nav.ecoHistory'), icon: TrendingUp },
     { path: '/friends',     label: t('nav.friends'),     icon: Heart },
@@ -53,7 +54,7 @@ export const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-1 flex-1">
-          {navLinks.slice(0, 4).map((link) => (
+          {navLinks.slice(0, 5).map((link) => (
             <Link key={link.path} to={link.path}>
               <Button
                 variant={isActive(link.path) ? 'default' : 'ghost'}
@@ -74,7 +75,7 @@ export const Navbar = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              {navLinks.slice(4).map((link) => (
+              {navLinks.slice(5).map((link) => (
                 <DropdownMenuItem key={link.path} asChild>
                   <Link to={link.path} className="flex items-center gap-2">
                     <link.icon className="h-4 w-4" />

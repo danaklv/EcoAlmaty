@@ -20,7 +20,6 @@ import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import Feed from "./pages/Feed";
-import Groups from "./pages/Groups";
 import Friends from "./pages/Friends";
 import Map from "./pages/Map";
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -29,6 +28,7 @@ import EcoHistory from "./pages/EcoHistory";
 import EcoResult from "./pages/EcoResult";
 import Achievements from "./pages/Achievements";
 import Challenges from "./pages/Challenges";
+import Forecast from "@/pages/Forecast.tsx";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +59,7 @@ const App = () => (
 
             {/* Placeholder Routes */}
             <Route path="/feed" element={<ProtectedRoute><Feed /></ProtectedRoute>} />
+            <Route path="/forecast" element={<ProtectedRoute><Forecast /></ProtectedRoute>} />
             <Route path="/map" element={<ProtectedRoute><Map /></ProtectedRoute>} />
             <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
             <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
