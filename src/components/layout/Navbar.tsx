@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Leaf, Menu, User, Trophy, Activity, Users, MapPin, Heart, Info, TrendingUp } from 'lucide-react';
+import { Leaf, Menu, User, Trophy, Activity, Users, MapPin, Heart, Info, TrendingUp, Star, Zap } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import appleLogo from '@/assets/apple-logo.png';
 import { Button } from '@/components/ui/button';
@@ -22,8 +22,8 @@ export const Navbar = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login', { replace: true });
   };
 
@@ -33,8 +33,10 @@ export const Navbar = () => {
     { path: '/leaderboard', label: t('nav.leaderboard'), icon: Trophy },
     { path: '/feed',        label: t('nav.feed'),        icon: Activity },
     { path: '/map',         label: t('nav.map'),         icon: MapPin },
-    { path: '/groups',      label: t('nav.groups'),      icon: Users },
+    { path: '/eco-history', label: t('nav.ecoHistory'), icon: TrendingUp },
     { path: '/friends',     label: t('nav.friends'),     icon: Heart },
+    { path: '/achievements', label: t('nav.achievements'), icon: Star },
+    { path: '/challenges', label: t('nav.challenges'), icon: Zap },
     { path: '/about',       label: t('nav.about'),       icon: Info },
   ];
 

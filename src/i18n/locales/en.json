@@ -1,8 +1,8 @@
 {
   "nav": {
-    "dashboard": "Dashboard", "ecoActions": "Eco Actions", "leaderboard": "Leaderboard",
+    "dashboard": "Dashboard", "ecoActions": "Eco Actions", "ecoHistory": "Eco History", "leaderboard": "Leaderboard",
     "feed": "Feed", "map": "Map", "groups": "Groups", "friends": "Friends", "about": "About",
-    "more": "More", "profile": "Profile", "editProfile": "Edit Profile", "logout": "Logout",
+    "more": "More", "profile": "Profile", "achievements": "Achievements", "challenges":"Challenges", "editProfile": "Edit Profile", "logout": "Logout",
     "level": "Level {{level}}"
   },
   "auth": {
@@ -61,7 +61,17 @@
     "ecoActionsCard": "Eco Actions", "ecoActionsDesc": "Complete actions to earn points", "viewActions": "View Actions",
     "leaderboardCard": "Leaderboard", "leaderboardDesc": "See how you rank globally", "viewRankings": "View Rankings",
     "recentActivity": "Your Recent Activity", "noActivity": "No recent activity yet.",
-    "noActivityHint": "Complete eco actions to see your progress here!"
+    "noActivityHint": "Complete eco actions to see your progress here!",
+    "streak": "Daily Streak",
+    "streakDays": "days",
+    "longestStreak": "Longest streak",
+    "noStreak": "Complete eco actions to start your streak!",
+    "achievements": "Achievements",
+    "achievementsDesc": "Unlock badges by completing eco actions",
+    "viewAchievements": "View Achievements",
+    "retakeDisabled": "You can retake the test once a month",
+    "challenges": "Challenges", "viewAll": "View all", "daily": "Daily", "weekly": "Weekly",
+    "actionCompleted": "Eco action completed"
   },
   "ecoActions": {
     "title": "Eco Actions", "subtitle": "Complete daily actions to earn points and level up!",
@@ -121,7 +131,8 @@
     "analyzing": "Analyzing your footprint...",
     "resultTitle": "Test Complete!", "resultSubtitle": "Here's your eco footprint analysis",
     "ecoTips": "Eco Tips for You", "retake": "Retake Test",
-    "successToast": "Test completed!"
+    "successToast": "Test completed!",
+    "viewHistory": "View History"
   },
   "home": {
     "heroTitle": "Welcome to EcoTrack",
@@ -203,5 +214,30 @@
     }
   },
   "notFound": { "title": "Oops! Page not found", "back": "Return to Home" },
-  "common": { "loading": "Loading...", "error": "Something went wrong", "back": "Back", "cancel": "Cancel" }
+  "common": { "loading": "Loading...", "error": "Something went wrong", "back": "Back", "cancel": "Cancel" },
+  "ecoHistory": {
+    "title": "Eco Test History",
+    "subtitle": "Track your eco footprint over time",
+    "progress": "Progress (last 30 days)",
+    "results": "Test Results",
+    "noResults": "No test results yet",
+    "takeFirst": "Take your first test",
+    "loadMore": "Load more"
+  },
+  "achievements": {
+    "title": "Achievements",
+    "subtitle": "Unlock badges by completing eco actions",
+    "all": "All",
+    "categories": {
+      "actions": "Actions",
+      "streak": "Streak",
+      "tests": "Tests",
+      "results": "Results"
+    }
+  },
+  "challenges": {
+    "title": "Challenges", "subtitle": "Complete daily and weekly challenges to earn points",
+    "all": "All", "daily": "Daily", "weekly": "Weekly",
+    "progress": "Progress", "empty": "No active challenges right now"
+  }
 }

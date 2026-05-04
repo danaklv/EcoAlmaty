@@ -11,6 +11,7 @@ import { Leaf, ChevronRight, ChevronLeft, CheckCircle, AlertCircle, Loader2 } fr
 import { motion, AnimatePresence } from 'framer-motion';
 import type { EcoQuestion, EcoTestResult } from '@/types/eco';
 import { useTranslation } from 'react-i18next';
+import {Link} from "react-router-dom";
 
 type TestState = 'loading' | 'questions' | 'submitting' | 'result' | 'error';
 
@@ -141,9 +142,11 @@ export default function EcoTest() {
                 </div>
               )}
 
-              <Button onClick={handleRetake} className="w-full">
-                {t('ecoTest.retake')}
-              </Button>
+              <Link to="/eco-history">
+                <Button variant="outline" className="w-full">
+                  {t('ecoTest.viewHistory')}
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </motion.div>

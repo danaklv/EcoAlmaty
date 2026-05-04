@@ -13,8 +13,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { DateScrollPicker } from '@/components/ui/date-scroll-picker';
+import { getAvatarUrl } from '@/services/api';
 import {
   Select,
   SelectContent,
@@ -102,8 +102,8 @@ export default function EditProfile() {
         const uploadResponse = await api.post('/upload-avatar', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        if (uploadResponse.data.avatar_url) {
-          updateUser({ avatar: uploadResponse.data.avatar_url });
+        if (uploadResponse.data.file) {
+          updateUser({ avatar: getAvatarUrl(uploadResponse.data.file) });
         }
       }
 
@@ -261,38 +261,12 @@ export default function EditProfile() {
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel>{t('editProfile.birthDate')}</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                'w-full pl-3 text-left font-normal',
-                                !field.value && 'text-muted-foreground'
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, 'PPP')
-                              ) : (
-                                <span>{t('editProfile.pickDate')}</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date('1900-01-01')
-                            }
-                            initialFocus
-                            className="pointer-events-auto"
-                          />
-                        </PopoverContent>
-                      </Popover>
+                      <DateScrollPicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        minYear={1940}
+                        maxYear={new Date().getFullYear() - 5}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
