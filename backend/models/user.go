@@ -20,6 +20,7 @@ type Session struct {
 }
 
 type UserAction struct {
+	ActionID   int64     `json:"action_id"`
 	ActionName string    `json:"action_name"`
 	Points     int       `json:"points"`
 	CreatedAt  time.Time `json:"created_at"`
@@ -72,4 +73,13 @@ type ProfileResponse struct {
 	Level     int       `json:"level"`
 	League    string    `json:"league"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+
+
+
+type AddActionResult struct {
+	NewRating int    `json:"new_rating"`
+	NewLevel  int    `json:"new_level"`
+	NewLeague string `json:"new_league"`
 }

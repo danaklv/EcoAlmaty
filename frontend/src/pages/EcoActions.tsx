@@ -51,16 +51,23 @@ export default function EcoActions() {
     fetchCompletedToday();
   }, []);
 
-  const fetchActions = async () => {
-    try {
-      const res = await api.get('/eco-actions');
-      setActions(res.data || []);
-    } catch {
-      toast.error(t('ecoActions.failedLoad'));
-    } finally {
-      setLoading(false);
-    }
-  };
+ const fetchActions = async () => {
+  try {
+    const res = await api.get('/eco-actions');
+
+    const list = Array.isArray(res.data)
+      ? res.data
+      : Array.isArray(res.data?.items)
+        ? res.data.items
+        : [];
+
+    setActions(list);
+  } catch {
+    toast.error(t('ecoActions.failedLoad'));
+  } finally {
+    setLoading(false);
+  }
+};
 
   const fetchCompletedToday = async () => {
     try {

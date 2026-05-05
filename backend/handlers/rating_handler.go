@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"dl/models"
 	"dl/services"
 	"dl/utils"
 	"encoding/json"
@@ -40,14 +41,20 @@ func (h *RatingHandler) AddAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.Service.AddEcoAction(userID, data.ActionID); err != nil {
-		jsonError(w, http.StatusBadRequest, err.Error())
-		return
-	}
+	result, err := h.Service.AddEcoAction(userID, data.ActionID)
+if err != nil {
+	jsonError(w, http.StatusBadRequest, err.Error())
+	return
+}
 
-	jsonResponse(w, http.StatusOK, map[string]string{
-		"message": "action recorded successfully",
-	})
+jsonResponse(w, http.StatusOK, map[string]interface{}{
+	"message":    "action recorded successfully",
+	"new_rating": result.NewRating,
+	"new_level":  result.NewLevel,
+	"new_league": result.NewLeague,
+})
+
+	
 }
 
 // ------------------------ GET USER ACTION HISTORY ------------------------
@@ -119,5 +126,26 @@ func (h *RatingHandler) GetLeaderboard(w http.ResponseWriter, r *http.Request) {
 		"limit":  limit,
 		"offset": offset,
 		"total":  total,
+	})
+}
+
+func (h *RatingHandler) GetEcoActions(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		jsonError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	actions, err := h.Service.GetEcoActions()
+	if err != nil {
+		jsonError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if actions == nil {
+		actions = []models.EcoAction{}
+	}
+
+	jsonResponse(w, http.StatusOK, map[string]interface{}{
+		"items": actions,
 	})
 }

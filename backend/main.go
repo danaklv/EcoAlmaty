@@ -83,11 +83,10 @@ func main() {
 	)
 	ratingHandler := &handlers.RatingHandler{Service: ratingService}
 
-		// --- FRIENDS ---
+	// --- FRIENDS ---
 	friendsRepo := repositories.NewFriendsRepository(db)
 	friendsService := services.NewFriendsService(friendsRepo)
 	friendsHandler := &handlers.FriendsHandler{Service: friendsService}
-
 
 	// --- NEWS ---
 	newsRepo := repositories.NewNewsRepository(db)
@@ -120,7 +119,7 @@ func main() {
 	// Static uploads
 	mux.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir(uploadsDir))))
 
-		// Friends routes
+	// Friends routes
 	mux.Handle("/friends/send", middleware.JWTAuth(http.HandlerFunc(friendsHandler.SendRequest)))
 	mux.Handle("/friends/respond", middleware.JWTAuth(http.HandlerFunc(friendsHandler.RespondRequest)))
 	mux.Handle("/friends", middleware.JWTAuth(http.HandlerFunc(friendsHandler.GetFriends)))
@@ -134,6 +133,7 @@ func main() {
 	mux.Handle("/delete-profile", middleware.JWTAuth(http.HandlerFunc(profileHandler.DeleteProfile)))
 	mux.Handle("/upload-avatar", middleware.JWTAuth(http.HandlerFunc(profileHandler.UploadAvatar)))
 
+	mux.Handle("/eco-actions", middleware.JWTAuth(http.HandlerFunc(ratingHandler.GetEcoActions)))
 	mux.Handle("/add-action", middleware.JWTAuth(http.HandlerFunc(ratingHandler.AddAction)))
 	mux.Handle("/user-actions", middleware.JWTAuth(http.HandlerFunc(ratingHandler.GetUserActions)))
 	mux.Handle("/leaderboard", middleware.JWTAuth(http.HandlerFunc(ratingHandler.GetLeaderboard)))

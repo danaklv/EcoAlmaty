@@ -104,7 +104,7 @@ func (r *RatingRepository) ApplyEcoAction(
 
 func (r *RatingRepository) GetUserActions(userID int64) ([]models.UserAction, error) {
 	rows, err := r.DB.Query(`
-        SELECT a.name, ua.points, ua.created_at
+        SELECT ua.action_id, a.name, ua.points, ua.created_at
         FROM user_actions ua
         JOIN eco_actions a ON ua.action_id = a.id
         WHERE ua.user_id = $1
@@ -116,16 +116,23 @@ func (r *RatingRepository) GetUserActions(userID int64) ([]models.UserAction, er
 	defer rows.Close()
 
 	var actions []models.UserAction
+
 	for rows.Next() {
 		var a models.UserAction
-		if err := rows.Scan(&a.ActionName, &a.Points, &a.CreatedAt); err != nil {
+		if err := rows.Scan(
+			&a.ActionID,
+			&a.ActionName,
+			&a.Points,
+			&a.CreatedAt,
+		); err != nil {
 			return nil, err
 		}
+
 		actions = append(actions, a)
 	}
+
 	return actions, rows.Err()
 }
-
 // ------------------------ LEADERBOARD ------------------------
 
 func (r *RatingRepository) GetLeaderboard(limit, offset int) ([]models.LeaderboardEntry, error) {
@@ -218,4 +225,58 @@ func (r *RatingRepository) GetCompletedActionIDs(userID int64) ([]int64, error) 
 		ids = append(ids, id)
 	}
 	return ids, rows.Err()
+}
+
+
+func (r *RatingRepository) GetEcoActions() ([]models.EcoAction, error) {
+	rows, err := r.DB.Query(`
+		SELECT id, name, points, category, cooldown_type
+		FROM eco_actions
+		ORDER BY category ASC, points DESC, name ASC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var actions []models.EcoAction
+
+	for rows.Next() {
+		var action models.EcoAction
+		if err := rows.Scan(
+			&action.ID,
+			&action.Name,
+			&action.Points,
+			&action.Category,
+			&action.CooldownType,
+		); err != nil {
+			return nil, err
+		}
+
+		actions = append(actions, action)
+	}
+
+	return actions, rows.Err()
+}
+
+
+func (r *RatingRepository) GetUserStats(userID int64) (*models.UserStats, error) {
+	var stats models.UserStats
+
+	err := r.DB.QueryRow(`
+		SELECT id, rating, level, league
+		FROM users
+		WHERE id = $1
+	`, userID).Scan(
+		&stats.UserID,
+		&stats.Rating,
+		&stats.Level,
+		&stats.League,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &stats, nil
 }

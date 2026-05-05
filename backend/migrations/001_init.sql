@@ -198,7 +198,6 @@ CREATE TABLE eco_actions (
     cooldown_type VARCHAR(20) NOT NULL DEFAULT 'daily'
         CHECK (cooldown_type IN ('daily', 'weekly', 'one_time', 'none'))
 );
-
 CREATE INDEX idx_eco_actions_category ON eco_actions(category);
 
 
@@ -212,7 +211,6 @@ CREATE TABLE user_actions (
     points INT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
-
 CREATE INDEX idx_user_actions_user_id_created_at ON user_actions(user_id, created_at DESC);
 
 -- protects from duplicate daily action if cooldown_type == daily logic is used this way

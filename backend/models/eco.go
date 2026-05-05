@@ -148,3 +148,11 @@ type EcoProgressRow struct {
 	Category        string
 	CategoryPercent float64
 }
+
+type EcoAction struct {
+	ID           int64  `json:"id"`
+	Name         string `json:"name"`
+	Points       int    `json:"points"`
+	Category     string `json:"category"`
+	CooldownType string `json:"cooldown_type"`
+}

@@ -7,9 +7,9 @@ import (
 )
 
 type RatingService struct {
-	Repo         *repositories.RatingRepository
-	Gamification *GamificationService
-	Challenges   *ChallengeService
+	Repo          *repositories.RatingRepository
+	Gamification  *GamificationService
+	Challenges    *ChallengeService
 	ChallengeRepo *repositories.ChallengeRepository
 }
 
@@ -27,23 +27,23 @@ func NewRatingService(
 	}
 }
 
-func (s *RatingService) AddEcoAction(userID, actionID int64) error {
+func (s *RatingService) AddEcoAction(userID, actionID int64) (*models.AddActionResult, error) {
 	used, err := s.Repo.ActionUsedToday(userID, actionID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if used {
-		return errors.New("action already used today")
+		return nil, errors.New("action already used today")
 	}
 
 	points, category, err := s.ChallengeRepo.GetActionMeta(actionID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	currentRating, err := s.Repo.GetUserRating(userID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	newRating := currentRating + points
@@ -69,7 +69,7 @@ func (s *RatingService) AddEcoAction(userID, actionID int64) error {
 		level,
 		league,
 	); err != nil {
-		return err
+		return nil, err
 	}
 
 	if s.Gamification != nil {
@@ -80,7 +80,11 @@ func (s *RatingService) AddEcoAction(userID, actionID int64) error {
 		_ = s.Challenges.OnEcoAction(userID, category)
 	}
 
-	return nil
+	return &models.AddActionResult{
+		NewRating: newRating,
+		NewLevel:  level,
+		NewLeague: league,
+	}, nil
 }
 
 func (s *RatingService) GetUserActions(userID int64) ([]models.UserAction, error) {
@@ -93,4 +97,8 @@ func (s *RatingService) GetLeaderboard(limit, offset int) ([]models.LeaderboardE
 
 func (s *RatingService) CountLeaderboard() (int, error) {
 	return s.Repo.CountLeaderboard()
+}
+
+func (s *RatingService) GetEcoActions() ([]models.EcoAction, error) {
+	return s.Repo.GetEcoActions()
 }
