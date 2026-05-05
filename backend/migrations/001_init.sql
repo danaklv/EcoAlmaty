@@ -12,7 +12,7 @@ CREATE TABLE users (
     last_name VARCHAR(100),
     gender VARCHAR(20),
     birth_date DATE,
-    bio TEXT,
+    bio TEXT,d
     profile_picture VARCHAR(255),
 
     rating INT NOT NULL DEFAULT 0,
