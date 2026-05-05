@@ -308,3 +308,7 @@ CREATE TABLE IF NOT EXISTS friends (
     updated_at TIMESTAMP DEFAULT NOW(),
     UNIQUE(requester_id, addressee_id)
 );
+
+
+ALTER TABLE news ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE news ADD COLUMN IF NOT EXISTS category VARCHAR(100);
