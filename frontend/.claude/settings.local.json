@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(node -e \"['en','ru','kk'].forEach\\(l=>{try{const j=require\\('./src/i18n/locales/'+l+'.json'\\);console.log\\(l,'OK keys:',Object.keys\\(j\\).length\\)}catch\\(e\\){console.log\\(l,'ERR',e.message\\)}}\\)\")"
-    ]
-  }
-}
