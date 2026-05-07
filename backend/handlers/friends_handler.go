@@ -114,6 +114,53 @@ func (h *FriendsHandler) GetIncomingRequests(w http.ResponseWriter, r *http.Requ
 	jsonResponse(w, http.StatusOK, requests)
 }
 
+func (h *FriendsHandler) SearchUsers(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		jsonError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+	userID, err := utils.UserIDFromContext(r.Context())
+	if err != nil {
+		jsonError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	q := r.URL.Query().Get("q")
+	if len(q) < 2 {
+		jsonResponse(w, http.StatusOK, []interface{}{})
+		return
+	}
+	results, err := h.Service.SearchUsers(q, userID)
+	if err != nil {
+		jsonError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if results == nil {
+		results = []repositories.UserSearchResult{}
+	}
+	jsonResponse(w, http.StatusOK, results)
+}
+
+func (h *FriendsHandler) GetSentRequests(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		jsonError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+	userID, err := utils.UserIDFromContext(r.Context())
+	if err != nil {
+		jsonError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	results, err := h.Service.GetSentRequests(userID)
+	if err != nil {
+		jsonError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if results == nil {
+		results = []repositories.UserSearchResult{}
+	}
+	jsonResponse(w, http.StatusOK, results)
+}
+
 func (h *FriendsHandler) GetFriendsLeaderboard(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		jsonError(w, http.StatusMethodNotAllowed, "method not allowed")
