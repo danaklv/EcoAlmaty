@@ -24,6 +24,36 @@ type FriendRequest struct {
 	League      string `json:"league"`
 }
 
+type UserSearchResult struct {
+	ID       int64  `json:"id"`
+	Username string `json:"username"`
+	League   string `json:"league"`
+	Level    int    `json:"level"`
+}
+
+func (r *FriendsRepository) SearchUsers(query string, excludeID int64) ([]UserSearchResult, error) {
+	rows, err := r.DB.Query(`
+		SELECT id, username, league, level
+		FROM users
+		WHERE username ILIKE $1 AND id != $2
+		ORDER BY username
+		LIMIT 20
+	`, "%"+query+"%", excludeID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var result []UserSearchResult
+	for rows.Next() {
+		var u UserSearchResult
+		if err := rows.Scan(&u.ID, &u.Username, &u.League, &u.Level); err != nil {
+			return nil, err
+		}
+		result = append(result, u)
+	}
+	return result, nil
+}
+
 func (r *FriendsRepository) GetUserByUsername(username string) (int64, error) {
 	var id int64
 	err := r.DB.QueryRow(`SELECT id FROM users WHERE username = $1`, username).Scan(&id)
@@ -119,7 +149,7 @@ func (r *FriendsRepository) GetFriendsLeaderboard(userID int64, limit, offset in
 					WHEN fr.requester_id = $1 THEN fr.addressee_id
 					ELSE fr.requester_id
 				END AS friend_id
-			FROM friend_requests fr
+			FROM friends fr
 			WHERE (fr.requester_id = $1 OR fr.addressee_id = $1)
 			  AND fr.status = 'accepted'
 		)
@@ -154,6 +184,28 @@ func (r *FriendsRepository) GetFriendsLeaderboard(userID int64, limit, offset in
 	return list, rows.Err()
 }
 
+func (r *FriendsRepository) GetSentRequests(userID int64) ([]UserSearchResult, error) {
+	rows, err := r.DB.Query(`                                                                                                                                                                          
+		SELECT u.id, u.username, u.league, u.level
+		FROM friends f                                                                                                                                                                                 
+		JOIN users u ON f.addressee_id = u.id                                                                                                                                                        
+		WHERE f.requester_id = $1 AND f.status = 'pending'                                                                                                                                             
+	`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var result []UserSearchResult
+	for rows.Next() {
+		var u UserSearchResult
+		if err := rows.Scan(&u.ID, &u.Username, &u.League, &u.Level); err != nil {
+			return nil, err
+		}
+		result = append(result, u)
+	}
+	return result, nil
+}
+
 func (r *FriendsRepository) CountFriendsLeaderboard(userID int64) (int, error) {
 	var total int
 
@@ -167,7 +219,7 @@ func (r *FriendsRepository) CountFriendsLeaderboard(userID int64) (int, error) {
 						WHEN fr.requester_id = $1 THEN fr.addressee_id
 						ELSE fr.requester_id
 					END AS friend_id
-				FROM friend_requests fr
+				FROM friends fr
 				WHERE (fr.requester_id = $1 OR fr.addressee_id = $1)
 				  AND fr.status = 'accepted'
 		   )
