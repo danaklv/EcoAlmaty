@@ -124,7 +124,8 @@ func main() {
 	mux.Handle("/friends/respond", middleware.JWTAuth(http.HandlerFunc(friendsHandler.RespondRequest)))
 	mux.Handle("/friends", middleware.JWTAuth(http.HandlerFunc(friendsHandler.GetFriends)))
 	mux.Handle("/friends/requests", middleware.JWTAuth(http.HandlerFunc(friendsHandler.GetIncomingRequests)))
-	mux.Handle("/friends/leaderboard", middleware.JWTAuth(http.HandlerFunc(friendsHandler.GetFriendsLeaderboard)))
+	mux.Handle("/users/search", middleware.JWTAuth(http.HandlerFunc(friendsHandler.SearchUsers)))
+	mux.Handle("/friends/sent", middleware.JWTAuth(http.HandlerFunc(friendsHandler.GetSentRequests)))
 
 	// Protected profile routes (JWTAuth wrapper uses current signature: middleware.JWTAuth(next http.HandlerFunc) http.HandlerFunc)
 	mux.Handle("/eco", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetQuestions)))
