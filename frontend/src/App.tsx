@@ -22,13 +22,13 @@ import EditProfile from "./pages/EditProfile";
 import Feed from "./pages/Feed";
 import Friends from "./pages/Friends";
 import Map from "./pages/Map";
-import PlaceholderPage from "./pages/PlaceholderPage";
 import NotFound from "./pages/NotFound";
 import EcoHistory from "./pages/EcoHistory";
 import EcoResult from "./pages/EcoResult";
 import Achievements from "./pages/Achievements";
 import Challenges from "./pages/Challenges";
 import Forecast from "@/pages/Forecast.tsx";
+import About from "@/pages/About.tsx";
 
 const queryClient = new QueryClient();
 
@@ -64,7 +64,7 @@ const App = () => (
             <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
             <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
             <Route path="/challenges" element={<ProtectedRoute><Challenges /></ProtectedRoute>} />
-            <Route path="/about" element={<ProtectedRoute><PlaceholderPage titleKey="placeholder.about.title" descriptionKey="placeholder.about.description" /></ProtectedRoute>} />
+            <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>

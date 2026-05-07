@@ -1,23 +1,59 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Leaf, TreePine, Users, Trophy } from 'lucide-react';
+import {Leaf, TreePine, BrainCircuit, Trophy, User, Brain} from 'lucide-react';
 import WeatherWidget from '@/components/WeatherWidget';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { Navbar } from '@/components/layout/Navbar';
+import { useAuth } from '@/contexts/AuthContext';
+import {useEffect, useState} from "react";
 
 const Index = () => {
+  const { user } = useAuth();
   const { t } = useTranslation();
+  const [weather, setWeather] = useState<{
+  temperature: number;
+  weather: 'sunny' | 'cloudy' | 'rainy' | 'snowy';
+  }>({ temperature: 22, weather: 'sunny' });
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=Almaty&units=metric&appid=${import.meta.env.VITE_WEATHER_API_KEY}`
+        );
+        const data = await res.json();
+        const temp = Math.round(data.main.temp);
+        const id = data.weather[0].id;
+
+        let condition: 'sunny' | 'cloudy' | 'rainy' | 'snowy' = 'sunny';
+        if (id >= 600 && id < 700) condition = 'snowy';
+        else if (id >= 500 && id < 600) condition = 'rainy';
+        else if (id >= 700 || (id >= 300 && id < 500) || (id >= 801 && id <= 804)) condition = 'cloudy';
+
+        setWeather({ temperature: temp, weather: condition });
+      } catch {
+        // fallback to defaults
+      }
+    };
+    fetchWeather();
+  }, []);
   return (
     <div className="min-h-screen">
+      {user && <Navbar />}
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-forest">
-        {/* Language Switcher in top left */}
-        <div className="absolute top-6 left-6 z-10">
-          <LanguageSwitcher className="bg-white/10 hover:bg-white/20 text-white" />
-        </div>
+        {/* Language Switcher in top left — only for guests */}
+        {!user && (
+          <div className="absolute top-6 left-6 z-10">
+            <LanguageSwitcher className="bg-white/10 hover:bg-white/20 text-white" />
+          </div>
+        )}
         {/* Weather Widget in top right */}
         <div className="absolute top-6 right-6 z-10">
-          <WeatherWidget temperature={22} weather="sunny" />
+          <div className="scale-50 sm:scale-100 origin-top-right">
+            <WeatherWidget temperature={weather.temperature} weather={weather.weather}/>
+          </div>
         </div>
 
         <div className="container mx-auto px-4 py-24 sm:py-32">
@@ -34,6 +70,14 @@ const Index = () => {
               {t('home.heroSubtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {user ? (
+              <Link to="/dashboard">
+                <Button size="lg" variant="secondary" className="text-lg px-8">
+                  {t('home.goToDashboard')}
+                </Button>
+              </Link>
+            ) : (
+              <>
               <Link to="/register">
                 <Button size="lg" variant="secondary" className="text-lg px-8">
                   {t('home.getStarted')}
@@ -44,6 +88,8 @@ const Index = () => {
                   {t('home.signIn')}
                 </Button>
               </Link>
+              </>
+            )}
             </div>
           </div>
         </div>
@@ -68,7 +114,7 @@ const Index = () => {
           <div className="text-center space-y-4">
             <div className="flex justify-center">
               <div className="p-4 rounded-full bg-gradient-sky">
-                <Trophy className="h-8 w-8 text-white" />
+                <Trophy className="h-8 w-8 text-primary-foreground" />
               </div>
             </div>
             <h3 className="text-xl font-semibold">{t('home.feature2Title')}</h3>
@@ -79,8 +125,8 @@ const Index = () => {
 
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <div className="p-4 rounded-full bg-gradient-earth">
-                <Users className="h-8 w-8 text-white" />
+              <div className="p-4 rounded-full bg-gradient-sky">
+                <Brain className="h-8 w-8 text-primary-foreground"/>
               </div>
             </div>
             <h3 className="text-xl font-semibold">{t('home.feature3Title')}</h3>
@@ -92,19 +138,21 @@ const Index = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-muted py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">{t('home.ctaTitle')}</h2>
-          <p className="text-xl text-muted-foreground mb-8">
-            {t('home.ctaSubtitle')}
-          </p>
-          <Link to="/register">
-            <Button size="lg" className="text-lg px-8">
-              {t('home.ctaButton')}
-            </Button>
-          </Link>
+      {!user && (
+        <div className="bg-muted py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold mb-4">{t('home.ctaTitle')}</h2>
+            <p className="text-xl text-muted-foreground mb-8">
+              {t('home.ctaSubtitle')}
+            </p>
+            <Link to="/register">
+              <Button size="lg" className="text-lg px-8">
+                {t('home.ctaButton')}
+              </Button>
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

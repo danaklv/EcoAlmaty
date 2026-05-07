@@ -45,7 +45,7 @@ export const Navbar = () => {
     <nav className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
       <div className="container flex h-16 items-center px-4">
         {/* Logo */}
-        <Link to="/dashboard" className="flex items-center space-x-2 mr-8">
+        <Link to="/" className="flex items-center space-x-2 mr-8">
           <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm border-2 border-primary/20">
             <img src={appleLogo} alt="EcoTrack" className="w-8 h-8 object-contain" />
           </div>
