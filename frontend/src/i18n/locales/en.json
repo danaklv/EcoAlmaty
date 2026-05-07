@@ -137,14 +137,14 @@
   "home": {
     "heroTitle": "Welcome to EcoTrack",
     "heroSubtitle": "Join thousands of eco warriors making a positive impact on our planet",
-    "getStarted": "Get Started", "signIn": "Sign In",
+    "getStarted": "Get Started", "signIn": "Sign In", "goToDashboard": "Go to Dashboard",
     "howItWorks": "How It Works",
     "feature1Title": "Complete Eco Actions",
     "feature1Desc": "Take sustainable actions like recycling, planting trees, and reducing waste",
     "feature2Title": "Earn Points & Level Up",
     "feature2Desc": "Gain points for each action and climb through leagues as you progress",
-    "feature3Title": "Join the Community",
-    "feature3Desc": "Connect with like-minded individuals and inspire others to go green",
+    "feature3Title": "AI Air Quality Forecast",
+    "feature3Desc": "Get AI-powered predictions of air quality in your area and plan your day with confidence",
     "ctaTitle": "Ready to Make a Difference?",
     "ctaSubtitle": "Start your eco journey today and be part of the change",
     "ctaButton": "Join EcoTrack Now"
@@ -188,7 +188,12 @@
     "added": "Friend added!",
     "rejected": "Request rejected",
     "failedRespond": "Failed to respond",
-    "removed": "Friend removed", "failedRemove": "Failed to remove friend"
+    "removed": "Friend removed", "failedRemove": "Failed to remove friend",
+    "alreadyFriend": "This user is already your friend",
+    "alreadyIncoming": "This user already sent you a request",
+    "labelFriend": "✓ Friend",
+    "labelSent": "Sent",
+    "levelLabel": "Level {{level}}"
   },
   "map": {
     "title": "Eco Map of Almaty",
