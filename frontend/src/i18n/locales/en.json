@@ -73,14 +73,39 @@
     "challenges": "Challenges", "viewAll": "View all", "daily": "Daily", "weekly": "Weekly",
     "actionCompleted": "Eco action completed"
   },
-  "ecoActions": {
-    "title": "Eco Actions", "subtitle": "Complete daily actions to earn points and level up!",
-    "all": "All", "completeAction": "Complete Action", "completing": "Completing...", "completedToday": "Completed Today",
-    "failedLoad": "Failed to load actions", "failedComplete": "Failed to complete action",
-    "pointsEarned": "+{{points}} points earned!", "levelUp": "Level up! You're now level {{level}}!",
-    "resetNote": "Each action can be completed once per day. All actions reset at midnight (00:00) — come back tomorrow to earn more points!",
-    "categories": { "water": "Water", "energy": "Energy", "transport": "Transport", "food": "Food", "waste": "Waste", "nature": "Nature", "shopping": "Shopping" }
+ "ecoActions": {
+  "title": "Eco Actions",
+  "subtitle": "Complete daily actions to earn points and level up!",
+  "all": "All",
+  "completeAction": "Complete Action",
+  "completing": "Completing...",
+  "completedToday": "Completed Today",
+  "failedLoad": "Failed to load actions",
+  "failedComplete": "Failed to complete action",
+  "pointsEarned": "+{{points}} points earned!",
+  "levelUp": "Level up! You're now level {{level}}!",
+  "resetNote": "Each action can be completed once per day. All actions reset at midnight (00:00) — come back tomorrow to earn more points!",
+  "categories": {
+    "water": "Water",
+    "energy": "Energy",
+    "transport": "Transport",
+    "food": "Food",
+    "waste": "Waste",
+    "general": "General"
   },
+  "items": {
+    "1": "Take a shorter shower",
+    "2": "Turn off water when not using it",
+    "3": "Turn off lights when leaving a room",
+    "4": "Unplug unused chargers and electronics",
+    "5": "Walk instead of taking a short car ride",
+    "6": "Use public transport instead of taxi",
+    "7": "Use a reusable bottle or container",
+    "8": "Avoid food waste today",
+    "9": "Sort waste for recycling",
+    "10": "Use a reusable shopping bag"
+  }
+},
   "leaderboard": {
     "title": "Leaderboard", "subtitle": "See how you rank among eco warriors worldwide",
     "failedLoad": "Failed to load leaderboard", "level": "Level {{level}}", "points": "points",
@@ -124,16 +149,48 @@
     "failedLoad": "Failed to load news feed"
   },
   "ecoTest": {
-    "title": "Eco Footprint Test", "subtitle": "Discover your environmental impact and get personalized tips",
-    "loading": "Loading questions...", "tryAgain": "Try Again",
-    "question": "Question {{current}} of {{total}}", "complete": "{{percent}}% complete",
-    "previous": "Previous", "next": "Next", "submit": "Submit Test",
-    "analyzing": "Analyzing your footprint...",
-    "resultTitle": "Test Complete!", "resultSubtitle": "Here's your eco footprint analysis",
-    "ecoTips": "Eco Tips for You", "retake": "Retake Test",
-    "successToast": "Test completed!",
-    "viewHistory": "View History"
+  "title": "Eco Footprint Test",
+  "subtitle": "Discover your environmental impact and get personalized tips",
+  "loading": "Loading questions...",
+  "tryAgain": "Try Again",
+  "question": "Question {{current}} of {{total}}",
+  "complete": "{{percent}}% complete",
+  "previous": "Previous",
+  "next": "Next",
+  "submit": "Submit Test",
+  "analyzing": "Analyzing your footprint...",
+  "resultTitle": "Test Complete!",
+  "resultSubtitle": "Here's your eco footprint analysis",
+  "ecoTips": "Eco Tips for You",
+  "retake": "Retake Test",
+  "successToast": "Test completed!",
+  "viewHistory": "View History",
+  "options": {
+    "0": "Never",
+    "1": "Rarely",
+    "2": "Sometimes",
+    "3": "Often",
+    "4": "Almost always",
+    "5": "Always"
   },
+  "questions": {
+    "1": "How often do you turn off the tap when water is not being used?",
+    "2": "How often do you take a short shower instead of a long one?",
+    "3": "How often do you run the washing machine only with a full load?",
+    "4": "How often do you turn off lights when leaving a room?",
+    "5": "How often do you unplug chargers and electronics when they are not being used?",
+    "6": "How often do you use an air conditioner or heater unnecessarily?",
+    "7": "How often do you walk short distances?",
+    "8": "How often do you use public transport instead of taxi or private car?",
+    "9": "How often do you use taxi or private car without real necessity?",
+    "10": "How often do you plan shopping to avoid food waste?",
+    "11": "How often do you use a reusable bottle, cup, or container?",
+    "12": "How often do you order food with a lot of disposable packaging?",
+    "13": "How often do you sort waste for recycling?",
+    "14": "How often do you use a reusable shopping bag?",
+    "15": "How often do you use disposable bags, cups, or tableware?"
+  }
+},
   "home": {
     "heroTitle": "Welcome to EcoTrack",
     "heroSubtitle": "Join thousands of eco warriors making a positive impact on our planet",

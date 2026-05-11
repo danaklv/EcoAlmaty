@@ -20,41 +20,29 @@ func SeedEcoActions(db *sql.DB) error {
 	fmt.Println("Seeding eco_actions...")
 
 	_, err = db.Exec(`
-		INSERT INTO eco_actions (name, points, category) VALUES
+		INSERT INTO eco_actions (name, points, category, cooldown_type) VALUES
+
 		-- WATER
-		('Took a shorter shower today', 6, 'water'),
-		('Turned off water while brushing teeth', 5, 'water'),
-		('Ran washing machine only with full load', 7, 'water'),
-		('Reported or fixed a water leak', 10, 'water'),
+		('Take a shorter shower', 6, 'water', 'daily'),
+		('Turn off water when not using it', 5, 'water', 'daily'),
 
 		-- ENERGY
-		('Turned off lights when leaving room', 4, 'energy'),
-		('Unplugged unused electronics', 5, 'energy'),
-		('Used natural light instead of turning on lamps', 4, 'energy'),
-		('Reduced air conditioner or heater usage', 7, 'energy'),
+		('Turn off lights when leaving a room', 5, 'energy', 'daily'),
+		('Unplug unused chargers and electronics', 5, 'energy', 'daily'),
 
 		-- TRANSPORT
-		('Walked instead of taking a short car ride', 8, 'transport'),
-		('Used public transport instead of taxi', 9, 'transport'),
-		('Skipped one unnecessary taxi ride', 8, 'transport'),
-		('Used bicycle or walked for commute', 10, 'transport'),
+		('Walk instead of taking a short car ride', 8, 'transport', 'daily'),
+		('Use public transport instead of taxi', 9, 'transport', 'daily'),
 
 		-- FOOD
-		('Had a meat-free meal today', 7, 'food'),
-		('Used a reusable bottle or cup', 5, 'food'),
-		('Avoided food waste today', 8, 'food'),
-		('Packed food in reusable container', 6, 'food'),
+		('Use a reusable bottle or container', 6, 'food', 'daily'),
+		('Avoid food waste today', 8, 'food', 'daily'),
 
 		-- WASTE
-		('Sorted waste for recycling', 8, 'waste'),
-		('Used reusable shopping bag', 5, 'waste'),
-		('Avoided disposable tableware', 7, 'waste'),
-		('Reused an item instead of throwing it away', 6, 'waste'),
-
-		-- GENERAL
-		('Completed eco test this week', 10, 'general'),
-		('Read an article about sustainability', 3, 'general')
+		('Sort waste for recycling', 8, 'waste', 'daily'),
+		('Use a reusable shopping bag', 5, 'waste', 'daily')
 	`)
+
 	if err != nil {
 		return err
 	}
