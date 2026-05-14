@@ -107,12 +107,11 @@ func main() {
 	mux := http.NewServeMux()
 	
 	dashboardHandler := &handlers.DashboardHandler{
-	ProfileService:      profileService,
-	RatingService:       ratingService,
-	EcoService:          ecoService,
-	GamificationService: gamificationService,
-	ChallengeService:    challengeService,
-}
+		ProfileService:      profileService,
+		RatingService:       ratingService,
+		EcoService:          ecoService,
+		GamificationService: gamificationService,
+	}
 
 	// Public auth routes
 	mux.Handle("/register", authLimiter.Limit(http.HandlerFunc(authHandler.Register)))
