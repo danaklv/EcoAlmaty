@@ -1,3 +1,11 @@
+package handlers
+
+import (
+	"dl/services"
+	"dl/utils"
+	"net/http"
+)
+
 type DashboardHandler struct {
 	ProfileService      *services.ProfileService
 	RatingService       *services.RatingService
