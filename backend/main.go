@@ -28,7 +28,8 @@ func main() {
 
 	// --- Конфигурация (env с fallback) ---
 	dbURL := getenv("DATABASE_URL", "postgres://postgres:password@localhost:5432/ecoApp?sslmode=disable")
-	addr := getenv("HTTP_ADDR", ":8080")
+	port := getenv("PORT", "8080")
+	addr := ":" + port
 	uploadsDir := getenv("UPLOADS_DIR", "./uploads")
 	newsIntervalMin := getenvInt("NEWS_INTERVAL_MIN", 30)
 
@@ -124,7 +125,8 @@ func main() {
 	mux.Handle("/friends/respond", middleware.JWTAuth(http.HandlerFunc(friendsHandler.RespondRequest)))
 	mux.Handle("/friends", middleware.JWTAuth(http.HandlerFunc(friendsHandler.GetFriends)))
 	mux.Handle("/friends/requests", middleware.JWTAuth(http.HandlerFunc(friendsHandler.GetIncomingRequests)))
-	mux.Handle("/friends/leaderboard", middleware.JWTAuth(http.HandlerFunc(friendsHandler.GetFriendsLeaderboard)))
+	mux.Handle("/users/search", middleware.JWTAuth(http.HandlerFunc(friendsHandler.SearchUsers)))
+	mux.Handle("/friends/sent", middleware.JWTAuth(http.HandlerFunc(friendsHandler.GetSentRequests)))
 
 	// Protected profile routes (JWTAuth wrapper uses current signature: middleware.JWTAuth(next http.HandlerFunc) http.HandlerFunc)
 	mux.Handle("/eco", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetQuestions)))

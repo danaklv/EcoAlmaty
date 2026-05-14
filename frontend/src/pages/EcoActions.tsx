@@ -52,20 +52,22 @@ export default function EcoActions() {
   }, []);
 
   const fetchActions = async () => {
-    try {
-      const res = await api.get('/eco-actions');
-      const list = Array.isArray(res.data)
-        ? res.data
-        : Array.isArray(res.data?.items)
-          ? res.data.items
-          : [];
-      setActions(list);
-    } catch {
-      toast.error(t('ecoActions.failedLoad'));
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const res = await api.get('/eco-actions');
+
+    const list = Array.isArray(res.data)
+      ? res.data
+      : Array.isArray(res.data?.items)
+        ? res.data.items
+        : [];
+
+    setActions(list);
+  } catch {
+    toast.error(t('ecoActions.failedLoad'));
+  } finally {
+    setLoading(false);
+  }
+};
 
   const fetchCompletedToday = async () => {
     try {
@@ -205,9 +207,11 @@ export default function EcoActions() {
                           +{action.points} pts
                         </span>
                       </div>
-                      <CardTitle className={`mt-3 text-base transition-colors duration-300 ${done ? 'text-emerald-700' : ''}`}>
-                        {action.name}
-                      </CardTitle>
+                     <CardTitle className={`mt-3 text-base transition-colors duration-300 ${done ? 'text-emerald-700' : ''}`}>
+  {t(`ecoActions.items.${action.id}`, {
+    defaultValue: action.name,
+  })}
+</CardTitle>
                       <CardDescription className="text-xs capitalize">
                         {t(`ecoActions.categories.${action.category}`, { defaultValue: action.category })}
                       </CardDescription>

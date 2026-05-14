@@ -15,6 +15,14 @@ func NewFriendsService(repo *repositories.FriendsRepository) *FriendsService {
 	return &FriendsService{Repo: repo}
 }
 
+func (s *FriendsService) SearchUsers(query string, excludeID int64) ([]repositories.UserSearchResult, error) {
+	return s.Repo.SearchUsers(query, excludeID)
+}
+
+func (s *FriendsService) GetSentRequests(userID int64) ([]repositories.UserSearchResult, error) {
+	return s.Repo.GetSentRequests(userID)
+}
+
 func (s *FriendsService) SendRequest(requesterID int64, username string) error {
 	if username == "" {
 		return errors.New("username is required")
@@ -66,7 +74,7 @@ func (s *FriendsService) GetFriendsLeaderboard(userID int64, limit, offset int) 
 
 	total, err := s.Repo.CountFriendsLeaderboard(userID)
 	if err != nil {
-		return nil, 0, err	
+		return nil, 0, err
 	}
 
 	return items, total, nil

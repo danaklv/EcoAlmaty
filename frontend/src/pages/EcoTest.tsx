@@ -193,7 +193,13 @@ export default function EcoTest() {
           >
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">{currentQuestion?.text}</CardTitle>
+                <CardTitle className="text-lg">
+  {currentQuestion
+    ? t(`ecoTest.questions.${currentQuestion.id}`, {
+        defaultValue: currentQuestion.text,
+      })
+    : ''}
+</CardTitle>
               </CardHeader>
               <CardContent>
                 <RadioGroup
@@ -208,9 +214,11 @@ export default function EcoTest() {
                       onClick={() => handleAnswer(currentQuestion.id, option.value)}
                     >
                       <RadioGroupItem value={option.value.toString()} id={`option-${option.value}`} />
-                      <Label htmlFor={`option-${option.value}`} className="flex-1 cursor-pointer">
-                        {option.label}
-                      </Label>
+                   <Label htmlFor={`option-${option.value}`} className="flex-1 cursor-pointer">
+  {t(`ecoTest.options.${option.value}`, {
+    defaultValue: option.label,
+  })}
+</Label>
                     </div>
                   ))}
                 </RadioGroup>
