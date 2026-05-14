@@ -28,7 +28,8 @@ func main() {
 
 	// --- Конфигурация (env с fallback) ---
 	dbURL := getenv("DATABASE_URL", "postgres://postgres:password@localhost:5432/ecoApp?sslmode=disable")
-	addr := getenv("PORT", ":8080")
+	port := getenv("PORT", "8080")
+	addr := ":" + port
 	uploadsDir := getenv("UPLOADS_DIR", "./uploads")
 	newsIntervalMin := getenvInt("NEWS_INTERVAL_MIN", 30)
 
