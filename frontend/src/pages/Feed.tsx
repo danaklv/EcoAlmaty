@@ -33,6 +33,9 @@ const cleanHtml = (html: string): string => {
 export default function Feed() {
   const { t } = useTranslation();
   const [sourceFilter, setSourceFilter] = useState<string>('all');
+  const FALLBACK_IMAGES = Array.from({ length: 15 }, (_, i) =>
+    `https://picsum.photos/seed/eco${i}/400/300`
+  );
 
   type NewsResponse = {
     items: NewsItem[];
@@ -109,19 +112,12 @@ export default function Feed() {
               <Card key={item.id} className="flex flex-col sm:flex-row hover:shadow-md transition-shadow overflow-hidden">
                 
                 {/* Блок с картинкой */}
-                <div className="sm:w-1/3 bg-muted shrink-0 relative min-h-[200px] sm:min-h-full flex items-center justify-center border-b sm:border-b-0 sm:border-r border-border">
-                  {item.image_url ? (
-                    <img 
-                      src={item.image_url} 
-                      alt={item.title} 
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center text-muted-foreground">
-                      <ImageIcon className="h-10 w-10 mb-2 opacity-50" />
-                      <span className="text-xs">Нет фото</span>
-                    </div>
-                  )}
+                <div className="sm:w-1/3 bg-muted shrink-0 relative min-h-[200px] sm:min-h-full flex items-center justify-center border-b sm:border-b-0 sm:border-r border-border overflow-hidden">
+                  <img
+                    src={item.image_url || FALLBACK_IMAGES[item.id % FALLBACK_IMAGES.length]}
+                    alt={item.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                 </div>
 
                 {/* Блок с контентом */}

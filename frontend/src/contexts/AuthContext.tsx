@@ -89,12 +89,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const profileResponse = await api.get('/profile');
       const data = profileResponse.data;
       setUser({ ...data, avatar: getAvatarUrl(data.avatar) });
-
-      toast.success('Welcome back!');
     } catch (error: unknown) {
-      const message = (error as { response?: { data?: { error?: string } } })?.response?.data?.error || 'Login failed';
-      toast.error(message);
-      throw error;
+      const raw = (error as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      throw new Error(raw || 'Invalid email or password');
     }
   };
 
