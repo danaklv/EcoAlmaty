@@ -62,18 +62,25 @@ func (s *AuthService) Register(username, email, password string) (string, string
 	if err != nil {
 		if pgErr, ok := err.(*pq.Error); ok && pgErr.Code == "23505" {
 			if strings.Contains(pgErr.Message, "users_email_key") {
-				return "", "", errors.New("email already exists")
-			}
-			if strings.Contains(pgErr.Message, "users_username_key") {
+				_ = s.Users.DeleteUnverifiedUserByEmail(email)
+	
+				userID, err = s.Users.CreateUser(username, email, hashed)
+				if err != nil {
+					return "", "", err
+				}
+			} else if strings.Contains(pgErr.Message, "users_username_key") {
 				return "", "", errors.New("username already exists")
+			} else {
+				return "", "", errors.New("user already exists")
 			}
+		} else {
+			return "", "", err
 		}
-		return "", "", err
 	}
 
 	// generate verification code
 	code := utils.GenerateVerificationCode()
-	expires := time.Now().Add(10 * time.Minute)
+	expires := time.Now().Add(24 * time.Hour)
 
 	// store code
 	if err := s.Users.StoreVerificationCode(userID, code, expires); err != nil {
