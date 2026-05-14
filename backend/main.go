@@ -106,7 +106,13 @@ func main() {
 	// --- Router ---
 	mux := http.NewServeMux()
 	
-	mux.Handle("/dashboard", middleware.JWTAuth(http.HandlerFunc(dashboardHandler.GetDashboard)))
+	dashboardHandler := &handlers.DashboardHandler{
+	ProfileService:      profileService,
+	RatingService:       ratingService,
+	EcoService:          ecoService,
+	GamificationService: gamificationService,
+	ChallengeService:    challengeService,
+}
 
 	// Public auth routes
 	mux.Handle("/register", authLimiter.Limit(http.HandlerFunc(authHandler.Register)))
