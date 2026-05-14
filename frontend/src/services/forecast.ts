@@ -1,7 +1,6 @@
-const BASE_URL = "https://shimmy-unequal-rubbing.ngrok-free.dev";
+const BASE_URL = "https://ecoalmaty-ml-production.up.railway.app";
 const headers = {
   "Content-Type": "application/json",
-  "ngrok-Skip-Browser-Warning": "true",
 };
 
 export interface MetricStat {
@@ -32,9 +31,13 @@ export async function fetchForecast(horizon: number, lang: "ru" | "en"): Promise
     method: "POST", headers,
     body: JSON.stringify({ horizon, lang }),
   });
-  if (!res.ok) { const err = await res.json().catch(() => ({ detail: "Ошибка" })); throw new Error(err.detail); }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Ошибка" }));
+    throw new Error(err.detail);
+  }
   return res.json();
 }
+
 export async function fetchRawForecast(horizon: number, metrics: string[]): Promise<RawForecastResponse> {
   const res = await fetch(`${BASE_URL}/api/v1/forecast/`, {
     method: "POST", headers,

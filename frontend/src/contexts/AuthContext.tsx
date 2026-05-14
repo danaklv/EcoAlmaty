@@ -47,12 +47,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const data = response.data;
         setUser({ ...data, avatar: getAvatarUrl(data.avatar) });
       } catch (error) {
-        // Не удаляем токен здесь — interceptor сам попробует рефреш
         setToken(null);
         setUser(null);
       }
     } else {
-      // Нет access_token, но есть refresh_token — попробуем рефрешить
       const refreshToken = localStorage.getItem('refresh_token');
       if (refreshToken) {
         try {

@@ -120,13 +120,13 @@ export default function EcoTest() {
             </div>
             <CardContent className="p-6 space-y-6">
               <div className="text-center">
-                <div className="text-6xl font-bold text-primary mb-2">{result.total_score}</div>
+                <div className="text-6xl font-bold text-primary mb-2">{Number(result.total_score).toFixed(2)}</div>
                 <div className="text-xl font-semibold text-foreground">{result.category}</div>
                 <p className="text-muted-foreground mt-2">{result.description}</p>
               </div>
 
               {result.tips && result.tips.length > 0 && (
-                <div className="bg-muted/50 rounded-lg p-4">
+                  <div className="bg-muted/50 rounded-lg p-4">
                   <h3 className="font-semibold mb-3 flex items-center gap-2">
                     <Leaf className="h-5 w-5 text-primary" />
                     {t('ecoTest.ecoTips')}
@@ -180,7 +180,7 @@ export default function EcoTest() {
             <span>{t('ecoTest.question', { current: currentIndex + 1, total: questions.length })}</span>
             <span>{t('ecoTest.complete', { percent: Math.round(progress) })}</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={Math.round(progress)} className="h-2" />
         </div>
 
         <AnimatePresence mode="wait">
