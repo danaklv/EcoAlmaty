@@ -135,3 +135,19 @@ func (r *UserRepository) DeleteUnverifiedUser(userID int64) error {
 
 	return nil
 }
+
+func (r *UserRepository) DeleteUnverifiedUserByEmail(email string) error {
+	_, err := r.DB.Exec(`
+		DELETE FROM users
+		WHERE email = $1 AND is_verified = false
+	`, email)
+	return err
+}
+
+func (r *UserRepository) DeleteUnverifiedUserByID(userID int64) error {
+	_, err := r.DB.Exec(`
+		DELETE FROM users
+		WHERE id = $1 AND is_verified = false
+	`, userID)
+	return err
+}
