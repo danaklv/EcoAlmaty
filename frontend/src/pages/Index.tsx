@@ -210,13 +210,15 @@ const Index = () => {
             </div>
             <div className="flex gap-3">
               {[
-                { emoji: '🌱', name: 'Seedling', pts: '0–500' },
-                { emoji: '🌿', name: 'Sprout', pts: '500–2k' },
-                { emoji: '🌳', name: 'Forest', pts: '2k+' },
+                { emoji: '🌱', name: 'Green Seed', pts: '0–100' },
+                { emoji: '🌿', name: 'Eco Enthusiast', pts: '100–250' },
+                { emoji: '🍃', name: 'Nature Keeper', pts: '250–500' },
+                { emoji: '🌳', name: 'Planet Guardian', pts: '500–1000' },
+                { emoji: '🌍', name: 'Earth Legend', pts: '1000+' },
               ].map(l => (
-                <div key={l.name} className="flex flex-col items-center px-4 py-3 rounded-xl border border-border bg-background text-center">
+                <div key={l.name} className="flex flex-col items-center px-3 py-3 rounded-xl border border-border bg-background text-center">
                   <span className="text-2xl mb-1">{l.emoji}</span>
-                  <span className="text-sm font-medium">{l.name}</span>
+                  <span className="text-xs font-medium">{l.name}</span>
                   <span className="text-xs text-muted-foreground">{l.pts} pts</span>
                 </div>
               ))}
