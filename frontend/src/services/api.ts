@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://eco-almaty-576239332238.asia-northeast1.run.app/';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://eco-almaty-576239332238.asia-northeast1.run.app';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -38,7 +38,8 @@ api.interceptors.response.use(
       error.response?.status === 401 &&
       !originalRequest._retry &&
       originalRequest.url !== '/refresh' &&
-      originalRequest.url !== '/logout'
+      originalRequest.url !== '/logout' &&
+      originalRequest.url !== '/login'
     ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {

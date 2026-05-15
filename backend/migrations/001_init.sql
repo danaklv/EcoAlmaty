@@ -312,3 +312,18 @@ CREATE TABLE IF NOT EXISTS friends (
 
 ALTER TABLE news ADD COLUMN IF NOT EXISTS image_url TEXT;
 ALTER TABLE news ADD COLUMN IF NOT EXISTS category VARCHAR(100);
+
+
+
+CREATE TABLE eco_action_submissions (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    action_id BIGINT NOT NULL REFERENCES eco_actions(id) ON DELETE CASCADE,
+    photo_url TEXT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    ai_comment TEXT,
+    ai_confidence NUMERIC(5,2),
+    points INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT NOW(),
+    reviewed_at TIMESTAMP
+);

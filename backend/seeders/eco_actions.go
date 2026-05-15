@@ -23,24 +23,25 @@ func SeedEcoActions(db *sql.DB) error {
 		INSERT INTO eco_actions (name, points, category, cooldown_type) VALUES
 
 		-- WATER
-		('Take a shorter shower', 6, 'water', 'daily'),
-		('Turn off water when not using it', 5, 'water', 'daily'),
+		('Use a reusable water bottle today', 6, 'water', 'daily'),
+		('Use a reusable cup instead of a disposable one', 6, 'water', 'daily'),
 
-		-- ENERGY
-		('Turn off lights when leaving a room', 5, 'energy', 'daily'),
-		('Unplug unused chargers and electronics', 5, 'energy', 'daily'),
-
+		-- ENERGY / ECO HABITS
+		('Use a reusable lunch container', 7, 'food', 'daily'),
+	
 		-- TRANSPORT
-		('Walk instead of taking a short car ride', 8, 'transport', 'daily'),
-		('Use public transport instead of taxi', 9, 'transport', 'daily'),
-
-		-- FOOD
-		('Use a reusable bottle or container', 6, 'food', 'daily'),
-		('Avoid food waste today', 8, 'food', 'daily'),
+		('Use public transport instead of a taxi or private car', 9, 'transport', 'daily'),
+		('Use a bicycle or walk instead of using a car', 8, 'transport', 'daily'),
 
 		-- WASTE
-		('Sort waste for recycling', 8, 'waste', 'daily'),
-		('Use a reusable shopping bag', 5, 'waste', 'daily')
+		('Sort plastic, paper, or glass for recycling', 8, 'waste', 'daily'),
+		('Take recyclable waste to a collection point', 10, 'waste', 'daily'),
+		('Use a reusable shopping bag', 5, 'waste', 'daily'),
+
+		-- NATURE / COMMUNITY
+		('Plant or take care of a plant or tree', 10, 'nature', 'daily'),
+		('Participate in a cleanup or eco event', 12, 'nature', 'daily'),
+		('Donate clothes, books, or items for reuse', 10, 'nature', 'daily')
 	`)
 
 	if err != nil {
