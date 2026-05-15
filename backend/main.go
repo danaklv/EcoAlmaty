@@ -103,9 +103,19 @@ func main() {
 	)
 	ecoHandler := handlers.EcoHandler{Service: ecoService}
 
+	// AI CHECK
+	submissionRepo := repositories.NewActionSubmissionRepository(db)
+	aiService := services.NewHuggingFaceModerationService()
+	submissionService := services.NewActionSubmissionService(
+		submissionRepo,
+		ratingService,
+		aiService,
+	)
+	submissionHandler := handlers.NewActionSubmissionHandler(submissionService)
+
 	// --- Router ---
 	mux := http.NewServeMux()
-	
+
 	dashboardHandler := &handlers.DashboardHandler{
 		ProfileService:      profileService,
 		RatingService:       ratingService,
@@ -113,7 +123,7 @@ func main() {
 		GamificationService: gamificationService,
 	}
 
-		mux.Handle(
+	mux.Handle(
 		"/dashboard",
 		middleware.JWTAuth(http.HandlerFunc(dashboardHandler.GetDashboard)),
 	)
@@ -166,6 +176,17 @@ func main() {
 	mux.Handle("/eco/result", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetResult)))
 	mux.Handle("/eco/history", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetHistory)))
 	mux.Handle("/eco/progress", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetProgress)))
+
+	// AI ROUTE
+	mux.Handle(
+		"/actions/submit",
+		middleware.JWTAuth(http.HandlerFunc(submissionHandler.SubmitActionPhoto)),
+	)
+
+	mux.Handle(
+		"/my-submissions",
+		middleware.JWTAuth(http.HandlerFunc(submissionHandler.GetMySubmissions)),
+	)
 
 	// News (public)
 	mux.HandleFunc("/news", newsHandler.GetAll)

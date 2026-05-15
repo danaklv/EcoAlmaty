@@ -11,6 +11,9 @@ services:
       - ./backend/migrations/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql
 
   backend:
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     build: ./backend
     container_name: eco_backend
     depends_on:

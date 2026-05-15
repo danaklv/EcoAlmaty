@@ -77,33 +77,75 @@
   "title": "Eco Actions",
   "subtitle": "Complete daily actions to earn points and level up!",
   "all": "All",
-  "completeAction": "Complete Action",
+
+  "submitProof": "Submit proof",
+  "sending": "Sending...",
+  "approvedToday": "Approved today",
+  "pendingReview": "Pending review",
+  "underReview": "Under review",
+  "tryAgain": "Try again",
+
+  "statusApproved": "Approved",
+  "statusPending": "Manual review",
+  "statusRejected": "Not approved",
+
+  "completeAction": "Complete",
   "completing": "Completing...",
-  "completedToday": "Completed Today",
+  "completedToday": "Completed today",
   "failedLoad": "Failed to load actions",
   "failedComplete": "Failed to complete action",
-  "pointsEarned": "+{{points}} points earned!",
-  "levelUp": "Level up! You're now level {{level}}!",
-  "resetNote": "Each action can be completed once per day. All actions reset at midnight (00:00) — come back tomorrow to earn more points!",
+  "pointsEarned": "+{{points}} points!",
+  "levelUp": "Level up! You are now level {{level}}!",
+  "resetNote": "Each action can be completed once per day. Actions reset at midnight.",
+  "moderationNote": "Points are added after photo moderation. You can continue using the app while your proof is being checked.",
+
   "categories": {
     "water": "Water",
     "energy": "Energy",
     "transport": "Transport",
     "food": "Food",
     "waste": "Waste",
-    "general": "General"
+    "nature": "Nature",
+    "shopping": "Shopping"
   },
+
   "items": {
-    "1": "Take a shorter shower",
-    "2": "Turn off water when not using it",
-    "3": "Turn off lights when leaving a room",
-    "4": "Unplug unused chargers and electronics",
-    "5": "Walk instead of taking a short car ride",
-    "6": "Use public transport instead of taxi",
-    "7": "Use a reusable bottle or container",
-    "8": "Avoid food waste today",
-    "9": "Sort waste for recycling",
-    "10": "Use a reusable shopping bag"
+    "1": "Use a reusable water bottle today",
+    "2": "Use a reusable cup instead of a disposable one",
+    "3": "Use a reusable lunch container",
+    "4": "Use public transport instead of a taxi or private car",
+    "5": "Use a bicycle or walk instead of using a car",
+    "6": "Sort plastic, paper, or glass for recycling",
+    "7": "Take recyclable waste to a collection point",
+    "8": "Use a reusable shopping bag",
+    "9": "Plant or take care of a plant or tree",
+    "10": "Participate in a cleanup or eco event",
+    "11": "Donate clothes, books, or items for reuse",
+    "12": "Buy or prepare food without disposable plastic packaging"
+  },
+
+  "uploadModal": {
+    "badge": "Eco action proof",
+    "title": "Submit proof photo",
+    "subtitle": "Upload a clear photo and continue using the app. The result will appear on the card later.",
+    "pointsAfter": "+{{points}} pts after moderation",
+    "uploadTitle": "Upload or drag photo here",
+    "uploadHint": "Choose a clear image that shows the completed eco action.",
+    "fileHint": "PNG, JPG, JPEG up to 5MB",
+    "replacePhoto": "Click to replace photo",
+    "notice": "The photo will be sent for moderation. You do not need to wait — the card status will update automatically.",
+    "cancel": "Cancel",
+    "submit": "Submit proof",
+    "checking": "Photo is being checked"
+  },
+
+  "toasts": {
+    "selectPhoto": "Please select a photo",
+    "invalidImage": "Please upload an image file",
+    "photoSubmitted": "Photo submitted. Moderation is in progress.",
+    "approved": "Photo approved. Points have been added!",
+    "waiting": "Photo is waiting for moderation.",
+    "failedSubmit": "Failed to submit photo"
   }
 },
   "leaderboard": {
