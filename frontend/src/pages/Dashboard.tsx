@@ -168,42 +168,40 @@ export default function Dashboard() {
 
         {/* Challenges + Recent Activity */}
         <div className="grid md:grid-cols-2 gap-4">
-          {challenges.length > 0 && (
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Zap className="h-5 w-5 text-yellow-500" />
-                  {t('dashboard.challenges')}
-                </CardTitle>
-                <Link to="/challenges">
-                  <Button variant="ghost" size="sm">{t('dashboard.viewAll')}</Button>
-                </Link>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {challenges.slice(0, 3).map(ch => (
-                  <div key={ch.id} className="space-y-1.5">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium">{ch.title}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                        ch.scope === 'daily' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
-                      }`}>
-                        {ch.scope === 'daily' ? t('dashboard.daily') : t('dashboard.weekly')}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all ${ch.status === 'completed' ? 'bg-green-500' : 'bg-primary'}`}
-                          style={{ width: `${Math.min((ch.progress / ch.target_value) * 100, 100)}%` }}
-                        />
-                      </div>
-                      <span className="text-xs text-muted-foreground shrink-0">{ch.progress}/{ch.target_value}</span>
-                    </div>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Zap className="h-5 w-5 text-yellow-500" />
+                {t('dashboard.challenges')}
+              </CardTitle>
+              <Link to="/challenges">
+                <Button variant="ghost" size="sm">{t('dashboard.viewAll')}</Button>
+              </Link>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {challenges.slice(0, 3).map(ch => (
+                <div key={ch.id} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium">{ch.title}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                      ch.scope === 'daily' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
+                    }`}>
+                      {ch.scope === 'daily' ? t('dashboard.daily') : t('dashboard.weekly')}
+                    </span>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all ${ch.status === 'completed' ? 'bg-green-500' : 'bg-primary'}`}
+                        style={{ width: `${Math.min((ch.progress / ch.target_value) * 100, 100)}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-muted-foreground shrink-0">{ch.progress}/{ch.target_value}</span>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader className="pb-2">
