@@ -53,7 +53,7 @@
     "minLength": "Password must be at least 8 characters", "mismatch": "Passwords don't match"
   },
   "dashboard": {
-    "welcome": "Welcome back, {{name}}!", "subtitle": "Ready to make a positive impact today?",
+    "welcome": "Welcome, {{name}}!", "subtitle": "Ready to make a positive impact today?",
     "currentRating": "Current Rating", "level": "Level", "league": "League",
     "ecoFootprint": "Your Eco Footprint", "retakeTest": "Retake Test", "takeTest": "Take the Test",
     "takeTestPrompt": "Take the eco footprint test to discover your environmental impact",
