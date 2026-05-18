@@ -85,7 +85,7 @@ html := `
 
 m.SetBody("text/html", html)
 
-	d := gomail.NewDialer("smtp.gmail.com", 465, smtpUser, smtpPass)
+	d := gomail.NewDialer(os.Getenv("SMTP_HOST"), 587, smtpUser, smtpPass)
 	d.SSL = true
 
 	if err := d.DialAndSend(m); err != nil {
