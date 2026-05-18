@@ -118,7 +118,7 @@ export default function About() {
         </Card>
 
         <p className="text-center text-xs text-muted-foreground pb-4">
-          Almaty, 2025 &mdash; IITU Diploma Project
+          Almaty, 2026 &mdash; IITU Diploma Project
         </p>
 
       </div>
