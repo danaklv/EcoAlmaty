@@ -93,20 +93,8 @@ func (s *AuthService) Register(username, email, password string) (string, string
 		return "", "", errors.New("failed to send verification email")
 	}
 	// do not return tokens until email is verified
-	// return "", "", nil
-	access, refresh, err := utils.GenerateTokens(userID)
-	if err != nil {
-	    return "", "", err
-	}
-	if err := s.Auth.SaveRefreshToken(
-	    userID,
-	    refresh,
-	    time.Now().Add(7*24*time.Hour),
-	); err != nil {
-	    return "", "", err
-	}
-	return access, refresh, nil
-	}
+	return "", "", nil
+	
 
 // --------------------------------------------------------
 // LOGIN
