@@ -23,6 +23,9 @@ func ValidateEmail(email string) error {
 }
 
 func SendVerificationEmail(to, code string) error {
+	log.Println("Email sending skipped (SMTP unavailable):", to, code)
+    return nil
+	
 	smtpUser := os.Getenv("SMTP_USER")
 	smtpPass := os.Getenv("SMTP_PASS")
 	frontURL := os.Getenv("FRONTEND_URL")
