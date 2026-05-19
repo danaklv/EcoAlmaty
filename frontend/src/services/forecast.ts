@@ -1,7 +1,4 @@
-const BASE_URL = "https://ecoalmaty-ml-production.up.railway.app";
-const headers = {
-  "Content-Type": "application/json",
-};
+import { api } from './api';
 
 export interface MetricStat {
   metric: string; name: string;
@@ -27,22 +24,11 @@ export interface RawForecastResponse {
 }
 
 export async function fetchForecast(horizon: number, lang: "ru" | "en"): Promise<ForecastResponse> {
-  const res = await fetch(`${BASE_URL}/api/v1/bot/forecast`, {
-    method: "POST", headers,
-    body: JSON.stringify({ horizon, lang }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: "Ошибка" }));
-    throw new Error(err.detail);
-  }
-  return res.json();
+  const res = await api.post('/forecast/bot', { horizon, lang });
+  return res.data;
 }
 
 export async function fetchRawForecast(horizon: number, metrics: string[]): Promise<RawForecastResponse> {
-  const res = await fetch(`${BASE_URL}/api/v1/forecast/`, {
-    method: "POST", headers,
-    body: JSON.stringify({ horizon, metrics }),
-  });
-  if (!res.ok) throw new Error("Raw forecast failed");
-  return res.json();
+  const res = await api.post('/forecast/proxy', { horizon, metrics });
+  return res.data;
 }
