@@ -177,6 +177,10 @@ func main() {
 	mux.Handle("/eco/history", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetHistory)))
 	mux.Handle("/eco/progress", middleware.JWTAuth(http.HandlerFunc(ecoHandler.GetProgress)))
 
+	//forecast
+	mux.Handle("/forecast/bot", middleware.JWTAuth(http.HandlerFunc(forecastBotProxyHandler)))
+	mux.Handle("/forecast/proxy", middleware.JWTAuth(http.HandlerFunc(forecastProxyHandler)))
+	
 	// AI ROUTE
 	mux.Handle(
 		"/actions/submit",
@@ -299,4 +303,42 @@ func ensureDir(path string) error {
 	// защитим от относительных путей и вернём абсолютный путь (по желанию)
 	_, err := filepath.Abs(path)
 	return err
+}
+
+//forecast
+func forecastProxyHandler(w http.ResponseWriter, r *http.Request) {
+	body, _ := io.ReadAll(r.Body)
+
+	req, _ := http.NewRequest("POST",
+		"https://ecoalmaty-ml-production.up.railway.app/api/v1/forecast/",
+		bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{Timeout: 120 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	defer resp.Body.Close()
+
+	w.Header().Set("Content-Type", "application/json")
+	io.Copy(w, resp.Body)
+}
+
+func forecastBotProxyHandler(w http.ResponseWriter, r *http.Request) {
+	body, _ := io.ReadAll(r.Body)
+	req, _ := http.NewRequest("POST",
+		"https://ecoalmaty-ml-production.up.railway.app/api/v1/bot/forecast",
+		bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{Timeout: 120 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	defer resp.Body.Close()
+	w.Header().Set("Content-Type", "application/json")
+	io.Copy(w, resp.Body)
 }
